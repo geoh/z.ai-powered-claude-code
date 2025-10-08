@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Read the configuration file
+CONFIG_FILE="$HOME/.zai.json"
+
+# Check if the config file exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: Configuration file $CONFIG_FILE not found."
+    exit 1
+fi
+
+# Extract values using jq
+API_KEY=$(jq -r '.apiKey' "$CONFIG_FILE")
+OPUS_MODEL=$(jq -r '.opusModel' "$CONFIG_FILE")
+SONNET_MODEL=$(jq -r '.sonnetModel' "$CONFIG_FILE")
+HAIKU_MODEL=$(jq -r '.haikuModel' "$CONFIG_FILE")
+
+# Set environment variables for Z.AI
+export ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic"
+export ANTHROPIC_AUTH_TOKEN="$API_KEY"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="$OPUS_MODEL"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="$SONNET_MODEL"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="$HAIKU_MODEL"
+
+# Launch Claude Code
+claude "$@"

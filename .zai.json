@@ -1,0 +1,6 @@
+{
+  "apiKey": "your-api-key",
+  "opusModel": "glm-4.6",
+  "sonnetModel": "glm-4.5",
+  "haikuModel": "glm-4.5-air"
+}
