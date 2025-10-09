@@ -15,6 +15,7 @@ OPUS_MODEL=$(jq -r '.opusModel' "$CONFIG_FILE")
 SONNET_MODEL=$(jq -r '.sonnetModel' "$CONFIG_FILE")
 HAIKU_MODEL=$(jq -r '.haikuModel' "$CONFIG_FILE")
 SUBAGENT_MODEL=$(jq -r '.subagentModel' "$CONFIG_FILE")
+DEFAULT_MODEL=$(jq -r '.defaultModel' "$CONFIG_FILE")
 ENABLE_THINKING=$(jq -r '.enableThinking' "$CONFIG_FILE")
 ENABLE_STREAMING=$(jq -r '.enableStreaming' "$CONFIG_FILE")
 REASONING_EFFORT=$(jq -r '.reasoningEffort' "$CONFIG_FILE")  # Values: "auto", "low", "medium", or "high"
@@ -37,5 +38,9 @@ export MAX_OUTPUT_TOKENS="$MAX_OUTPUT_TOKENS"
 # Privacy configuration
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 
-# Launch Claude Code
-claude "$@"
+# Launch Claude Code with optional default model
+if [ -n "$DEFAULT_MODEL" ] && [ "$DEFAULT_MODEL" != "null" ] && [ "$DEFAULT_MODEL" != "" ]; then
+    claude --model "$DEFAULT_MODEL" "$@"
+else
+    claude "$@"
+fi

@@ -25,5 +25,9 @@ $env:MAX_OUTPUT_TOKENS = $Config.maxOutputTokens
 # Privacy configuration
 $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 
-# Launch Claude Code
-claude $args
+# Launch Claude Code with optional default model
+if ($Config.defaultModel -and $Config.defaultModel -ne "" -and $Config.defaultModel -ne "null") {
+    claude --model $Config.defaultModel $args
+} else {
+    claude $args
+}

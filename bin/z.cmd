@@ -12,12 +12,13 @@ for /f "delims=" %%b in ('jq -r ".opusModel" "%CONFIG_FILE%"') do set OPUS_MODEL
 for /f "delims=" %%c in ('jq -r ".sonnetModel" "%CONFIG_FILE%"') do set SONNET_MODEL=%%c
 for /f "delims=" %%d in ('jq -r ".haikuModel" "%CONFIG_FILE%"') do set HAIKU_MODEL=%%d
 for /f "delims=" %%e in ('jq -r ".subagentModel" "%CONFIG_FILE%"') do set SUBAGENT_MODEL=%%e
-for /f "delims=" %%f in ('jq -r ".enableThinking" "%CONFIG_FILE%"') do set ENABLE_THINKING=%%f
-for /f "delims=" %%g in ('jq -r ".enableStreaming" "%CONFIG_FILE%"') do set ENABLE_STREAMING=%%g
-for /f "delims=" %%h in ('jq -r ".reasoningEffort" "%CONFIG_FILE%"') do set REASONING_EFFORT=%%h
+for /f "delims=" %%f in ('jq -r ".defaultModel" "%CONFIG_FILE%"') do set DEFAULT_MODEL=%%f
+for /f "delims=" %%g in ('jq -r ".enableThinking" "%CONFIG_FILE%"') do set ENABLE_THINKING=%%g
+for /f "delims=" %%h in ('jq -r ".enableStreaming" "%CONFIG_FILE%"') do set ENABLE_STREAMING=%%h
+for /f "delims=" %%i in ('jq -r ".reasoningEffort" "%CONFIG_FILE%"') do set REASONING_EFFORT=%%i
 rem REASONING_EFFORT values: "auto", "low", "medium", or "high"
-for /f "delims=" %%i in ('jq -r ".maxThinkingTokens" "%CONFIG_FILE%"') do set MAX_THINKING_TOKENS=%%i
-for /f "delims=" %%j in ('jq -r ".maxOutputTokens" "%CONFIG_FILE%"') do set MAX_OUTPUT_TOKENS=%%j
+for /f "delims=" %%j in ('jq -r ".maxThinkingTokens" "%CONFIG_FILE%"') do set MAX_THINKING_TOKENS=%%j
+for /f "delims=" %%k in ('jq -r ".maxOutputTokens" "%CONFIG_FILE%"') do set MAX_OUTPUT_TOKENS=%%k
 
 rem Set environment variables
 set ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic
@@ -35,5 +36,9 @@ set MAX_OUTPUT_TOKENS=%MAX_OUTPUT_TOKENS%
 rem Privacy configuration
 set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 
-rem Launch Claude Code
-claude %*
+rem Launch Claude Code with optional default model
+if not "%DEFAULT_MODEL%"=="" if not "%DEFAULT_MODEL%"=="null" (
+    claude --model %DEFAULT_MODEL% %*
+) else (
+    claude %*
+)
