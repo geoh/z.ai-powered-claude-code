@@ -18,7 +18,7 @@ $env:ANTHROPIC_DEFAULT_HAIKU_MODEL = $Config.haikuModel
 $env:CLAUDE_CODE_SUBAGENT_MODEL = $Config.subagentModel
 $env:ENABLE_THINKING = $Config.enableThinking
 $env:ENABLE_STREAMING = $Config.enableStreaming
-$env:REASONING_EFFORT = $Config.reasoningEffort  # Values: "auto", "low", "medium", or "high"
+$env:REASONING_EFFORT = $Config.reasoningEffort  # Values: "auto", "low", "medium", "high", or "max"
 $env:MAX_THINKING_TOKENS = $Config.maxThinkingTokens
 $env:MAX_OUTPUT_TOKENS = $Config.maxOutputTokens
 

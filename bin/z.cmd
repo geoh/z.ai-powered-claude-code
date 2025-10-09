@@ -16,7 +16,7 @@ for /f "delims=" %%f in ('jq -r ".defaultModel" "%CONFIG_FILE%"') do set DEFAULT
 for /f "delims=" %%g in ('jq -r ".enableThinking" "%CONFIG_FILE%"') do set ENABLE_THINKING=%%g
 for /f "delims=" %%h in ('jq -r ".enableStreaming" "%CONFIG_FILE%"') do set ENABLE_STREAMING=%%h
 for /f "delims=" %%i in ('jq -r ".reasoningEffort" "%CONFIG_FILE%"') do set REASONING_EFFORT=%%i
-rem REASONING_EFFORT values: "auto", "low", "medium", or "high"
+rem REASONING_EFFORT values: "auto", "low", "medium", "high", or "max"
 for /f "delims=" %%j in ('jq -r ".maxThinkingTokens" "%CONFIG_FILE%"') do set MAX_THINKING_TOKENS=%%j
 for /f "delims=" %%k in ('jq -r ".maxOutputTokens" "%CONFIG_FILE%"') do set MAX_OUTPUT_TOKENS=%%k
 

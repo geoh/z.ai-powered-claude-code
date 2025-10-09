@@ -34,11 +34,30 @@ Then edit `~/.zai.json` and replace the placeholder values with your actual Z.AI
   "apiKey": "your-api-key",
   "opusModel": "glm-4.6",
   "sonnetModel": "glm-4.5",
-  "haikuModel": "glm-4.5-air"
+  "haikuModel": "glm-4.5-air",
+  "defaultModel": "opus",
+  "enableThinking": "true",
+  "enableStreaming": "true",
+  "reasoningEffort": "high",
+  "maxThinkingTokens": "",
+  "maxOutputTokens": ""
 }
 ```
 
 Replace `"your-api-key"` with your actual Z.AI API key. You can also modify the model names if you prefer different Z.AI models.
+
+#### Configuration Options
+
+- **apiKey**: Your Z.AI API key (required)
+- **opusModel**: Model to use for opus tier requests (default: "glm-4.6")
+- **sonnetModel**: Model to use for sonnet tier requests (default: "glm-4.5")
+- **haikuModel**: Model to use for haiku tier requests (default: "glm-4.5-air")
+- **defaultModel**: Default model to use when no model is specified (default: "opus")
+- **enableThinking**: Enable AI thinking capabilities (default: "true")
+- **enableStreaming**: Enable streaming responses (default: "true")
+- **reasoningEffort**: Reasoning effort level - "auto", "low", "medium", "high", or "max" (default: "high")
+- **maxThinkingTokens**: Maximum tokens for thinking (default: "")
+- **maxOutputTokens**: Maximum tokens for output (default: "")
 
 ## Installation
 
@@ -129,6 +148,30 @@ z --model haiku
 # Pass any other claude arguments
 z --model opus "Help me write a Python script"
 ```
+
+### Default Model Configuration
+
+You can set a default model in your `~/.zai.json` configuration file using the `defaultModel` field. When set, the wrapper scripts will automatically use this model unless you explicitly specify a different model with `--model`.
+
+For example, to use `glm-4.5` as your default model:
+```json
+{
+  "defaultModel": "glm-4.5",
+  "apiKey": "your-api-key"
+}
+```
+
+### AI Thinking Capabilities
+
+The wrapper supports AI thinking capabilities through environment variables configured in `~/.zai.json`:
+
+- **ENABLE_THINKING**: Enable/disable thinking mode (default: "true")
+- **ENABLE_STREAMING**: Enable streaming responses (default: "true")
+- **REASONING_EFFORT**: Set reasoning effort level - "auto", "low", "medium", "high", or "max" (default: "high")
+- **MAX_THINKING_TOKENS**: Maximum tokens allocated for thinking (default: "")
+- **MAX_OUTPUT_TOKENS**: Maximum tokens for the output (default: "")
+
+Note: These thinking-related environment variables are experimental and their effectiveness depends on whether the Z.AI API supports these features.
 
 ## Status Line Features
 

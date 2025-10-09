@@ -18,7 +18,7 @@ SUBAGENT_MODEL=$(jq -r '.subagentModel' "$CONFIG_FILE")
 DEFAULT_MODEL=$(jq -r '.defaultModel' "$CONFIG_FILE")
 ENABLE_THINKING=$(jq -r '.enableThinking' "$CONFIG_FILE")
 ENABLE_STREAMING=$(jq -r '.enableStreaming' "$CONFIG_FILE")
-REASONING_EFFORT=$(jq -r '.reasoningEffort' "$CONFIG_FILE")  # Values: "auto", "low", "medium", or "high"
+REASONING_EFFORT=$(jq -r '.reasoningEffort' "$CONFIG_FILE")  # Values: "auto", "low", "medium", "high", or "max"
 MAX_THINKING_TOKENS=$(jq -r '.maxThinkingTokens' "$CONFIG_FILE")
 MAX_OUTPUT_TOKENS=$(jq -r '.maxOutputTokens' "$CONFIG_FILE")
 
