@@ -69,6 +69,8 @@ fi
 MODEL_ID=$(get_model_id)
 MODEL_NAME=$(get_model_name)
 CURRENT_DIR=$(get_current_dir)
+# Escape backslashes in the current directory path to prevent interpretation as escape sequences
+CURRENT_DIR_ESCAPED=$(echo "${CURRENT_DIR##*/}" | sed 's/\\/\\\\/g')
 LINES_ADDED=$(get_lines_added)
 LINES_REMOVED=$(get_lines_removed)
 API_DURATION=$(($(get_api_duration) / 1000))
@@ -86,7 +88,7 @@ else
 fi
 
 OUTPUT+=" [ ${BOLD_WHITE}${MODEL_NAME}${RESET} ]" # Model name
-OUTPUT+=" 📁 ${BOLD_YELLOW}${CURRENT_DIR##*/}${RESET}" # Current dir
+OUTPUT+=" 📁 ${BOLD_YELLOW}${CURRENT_DIR_ESCAPED}${RESET}" # Current dir
 OUTPUT+="${GIT_BRANCH} ${BOLD_GREEN}+${RESET}${LINES_ADDED} ${BOLD_RED}-${RESET}${LINES_REMOVED}" # Git stuff
 OUTPUT+=" | ⌚ ${GREEN}${API_DURATION}${RESET}/${PURPLE}${DURATION}${RESET}s" # Duration
 OUTPUT+=" | 💲${GREEN}${COST_ROUNDED}${RESET}" # Cost
