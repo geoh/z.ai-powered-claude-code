@@ -112,6 +112,7 @@ Configuration files use JSON format:
   "opusModel": "glm-4.6",
   "sonnetModel": "glm-4.5",
   "haikuModel": "glm-4.5-air",
+  "subagentModel": "glm-4.6",
   "defaultModel": "opus",
   "enableThinking": "true",
   "enableStreaming": "true",
@@ -127,6 +128,7 @@ Configuration files use JSON format:
 - **opusModel**: Model to use for opus tier requests (default: "glm-4.6")
 - **sonnetModel**: Model to use for sonnet tier requests (default: "glm-4.5")
 - **haikuModel**: Model to use for haiku tier requests (default: "glm-4.5-air")
+- **subagentModel**: Model to use for subagent tasks and specialized agents (default: "glm-4.6")
 - **defaultModel**: Default model to use when no model is specified (default: "opus")
 - **enableThinking**: Enable AI thinking capabilities (default: "true")
 - **enableStreaming**: Enable streaming responses (default: "true")

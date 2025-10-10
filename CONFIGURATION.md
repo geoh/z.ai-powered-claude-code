@@ -62,7 +62,7 @@ Configuration files use JSON format with the following options:
   "opusModel": "glm-4.6",
   "sonnetModel": "glm-4.5",
   "haikuModel": "glm-4.5-air",
-  "subagentModel": "glm-4.5-air",
+  "subagentModel": "glm-4.6",
   "defaultModel": "opus",
   "enableThinking": "true",
   "enableStreaming": "true",
@@ -100,9 +100,9 @@ Configuration files use JSON format with the following options:
 
 #### subagentModel
 - **Type**: String
-- **Default**: `"glm-4.5-air"`
+- **Default**: `"glm-4.6"`
 - **Description**: Z.AI model to use for Claude Code subagent operations
-- **Example**: `"glm-4.5-air"`
+- **Example**: `"glm-4.6"`
 
 #### defaultModel
 - **Type**: String
@@ -377,7 +377,7 @@ export ZAI_API_KEY="your-api-key-here"
   "opusModel": "glm-4.6",
   "sonnetModel": "glm-4.5",
   "haikuModel": "glm-4.5-air",
-  "subagentModel": "glm-4.5-air",
+  "subagentModel": "glm-4.6",
   "defaultModel": "sonnet",
   "enableThinking": "true",
   "enableStreaming": "true",

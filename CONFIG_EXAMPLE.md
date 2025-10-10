@@ -286,7 +286,7 @@ export ZAI_API_KEY="your-actual-api-key"
   "opusModel": "glm-4.5",
   "sonnetModel": "glm-4.5-air",
   "haikuModel": "glm-4.5-air",
-  "subagentModel": "glm-4.5-air",
+  "subagentModel": "glm-4.6",
   "defaultModel": "haiku",
   "reasoningEffort": "medium"
 }
