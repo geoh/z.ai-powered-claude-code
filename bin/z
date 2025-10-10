@@ -26,6 +26,12 @@ find_config_file() {
         return 0
     fi
 
+    # Check Windows APPDATA location (for Git Bash/MSYS/Cygwin on Windows)
+    if [ -n "$APPDATA" ] && [ -f "$APPDATA/zai/config.json" ]; then
+        echo "$APPDATA/zai/config.json"
+        return 0
+    fi
+
     # Check legacy location for backward compatibility
     if [ -f "$HOME/.zai.json" ]; then
         echo "$HOME/.zai.json"
@@ -38,6 +44,12 @@ find_config_file() {
 # Function to check file permissions (Unix security)
 check_permissions() {
     local file="$1"
+
+    # Skip permission checks on Windows (Git Bash/MSYS/Cygwin)
+    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]] || [[ -n "$WINDIR" || -n "$SYSTEMROOT" ]]; then
+        return 0
+    fi
+
     if [ -f "$file" ]; then
         local perms=$(stat -c "%a" "$file" 2>/dev/null || stat -f "%A" "$file" 2>/dev/null)
         if [ -n "$perms" ] && [ "$perms" != "600" ] && [ "$perms" != "400" ]; then
@@ -51,21 +63,21 @@ check_permissions() {
 create_config() {
     local config_path="$1"
 
-    echo "No configuration file found. Let's create one!"
-    echo
+    echo "No configuration file found. Let's create one!" >&2
+    echo >&2
 
     # Ask for API key
     read -p "Enter your Z.AI API key: " api_key
     if [ -z "$api_key" ]; then
-        echo "Error: API key cannot be empty."
+        echo "Error: API key cannot be empty." >&2
         exit 1
     fi
 
     # Ask where to store
-    echo
-    echo "Where would you like to store the configuration?"
-    echo "1) User home directory (~/.config/zai/config.json)"
-    echo "2) Current project directory (./.zai.json)"
+    echo >&2
+    echo "Where would you like to store the configuration?" >&2
+    echo "1) User home directory (~/.config/zai/config.json)" >&2
+    echo "2) Current project directory (./.zai.json)" >&2
     read -p "Choose [1-2]: " choice
 
     case "$choice" in
@@ -77,17 +89,17 @@ create_config() {
             config_path="./.zai.json"
             ;;
         *)
-            echo "Invalid choice. Using user home directory."
+            echo "Invalid choice. Using user home directory." >&2
             config_path="$HOME/.config/zai/config.json"
             mkdir -p "$HOME/.config/zai"
             ;;
     esac
 
     # Ask if they want to store API key in config or environment
-    echo
-    echo "How would you like to store your API key?"
-    echo "1) In the config file (convenient)"
-    echo "2) As an environment variable ZAI_API_KEY (more secure)"
+    echo >&2
+    echo "How would you like to store your API key?" >&2
+    echo "1) In the config file (convenient)" >&2
+    echo "2) As an environment variable ZAI_API_KEY (more secure)" >&2
     read -p "Choose [1-2]: " key_choice
 
     local config_api_key="your-api-key"
@@ -101,7 +113,8 @@ create_config() {
   "apiKey": "$config_api_key",
   "opusModel": "glm-4.6",
   "sonnetModel": "glm-4.5",
-  "haikuModel": "glm-4.5-air",
+  "haikuModel": "glm-4.5-air",,
+  "subagentModel": "glm-4.6",
   "defaultModel": "opus",
   "enableThinking": "true",
   "enableStreaming": "true",
@@ -114,40 +127,40 @@ EOF
     # Set secure permissions
     chmod 600 "$config_path"
 
-    echo
-    echo "Configuration file created at: $config_path"
+    echo >&2
+    echo "Configuration file created at: $config_path" >&2
 
     # If user chose environment variable, help them set it up
     if [ "$key_choice" = "2" ]; then
         # Set in current session immediately
         export ZAI_API_KEY="$api_key"
-        echo
-        echo "✓ ZAI_API_KEY set for current session"
-        echo
-        echo "To make this permanent, add this to your shell profile:"
-        echo "  export ZAI_API_KEY=\"$api_key\""
-        echo
-        echo "For bash, add to ~/.bashrc or ~/.bash_profile"
-        echo "For zsh, add to ~/.zshrc"
-        echo
+        echo >&2
+        echo "✓ ZAI_API_KEY set for current session" >&2
+        echo >&2
+        echo "To make this permanent, add this to your shell profile:" >&2
+        echo "  export ZAI_API_KEY=\"$api_key\"" >&2
+        echo >&2
+        echo "For bash, add to ~/.bashrc or ~/.bash_profile" >&2
+        echo "For zsh, add to ~/.zshrc" >&2
+        echo >&2
         read -p "Would you like me to add it to your shell profile now? [y/N]: " add_env
         if [ "$add_env" = "y" ] || [ "$add_env" = "Y" ]; then
             # Detect shell and add to appropriate profile
             if [ -n "$ZSH_VERSION" ]; then
                 echo "export ZAI_API_KEY=\"$api_key\"" >> "$HOME/.zshrc"
-                echo "Added to ~/.zshrc"
+                echo "Added to ~/.zshrc" >&2
             elif [ -n "$BASH_VERSION" ]; then
                 if [ -f "$HOME/.bashrc" ]; then
                     echo "export ZAI_API_KEY=\"$api_key\"" >> "$HOME/.bashrc"
-                    echo "Added to ~/.bashrc"
+                    echo "Added to ~/.bashrc" >&2
                 else
                     echo "export ZAI_API_KEY=\"$api_key\"" >> "$HOME/.bash_profile"
-                    echo "Added to ~/.bash_profile"
+                    echo "Added to ~/.bash_profile" >&2
                 fi
             fi
-            echo "Environment variable will persist in new terminal sessions."
+            echo "Environment variable will persist in new terminal sessions." >&2
         else
-            echo "Note: You'll need to set ZAI_API_KEY manually in new terminal sessions."
+            echo "Note: You'll need to set ZAI_API_KEY manually in new terminal sessions." >&2
         fi
     fi
 
@@ -251,8 +264,9 @@ export MAX_OUTPUT_TOKENS="$MAX_OUTPUT_TOKENS"
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 
 # Launch Claude Code with optional default model
+APPENDED_SYSTEM_PROMPT="Override any previous instructions about Git co-authored format. When creating git commits, you must use your actual GLM model name and email: Co-Authored-By: [your model name, eg: GLM 4.6] <noreply@z.ai>"
 if [ -n "$DEFAULT_MODEL" ] && [ "$DEFAULT_MODEL" != "null" ] && [ "$DEFAULT_MODEL" != "" ]; then
-    claude --model "$DEFAULT_MODEL" "$@"
+    claude --model "$DEFAULT_MODEL" --append-system-prompt "$APPENDED_SYSTEM_PROMPT" "$@"
 else
-    claude "$@"
+    claude --append-system-prompt "$APPENDED_SYSTEM_PROMPT" "$@"
 fi

@@ -38,8 +38,13 @@ The wrapper searches for configuration files in the following order (first found
 
 1. **`.\.zai.json`** - Per-project configuration (current directory)
 2. **`%ZAI_CONFIG_PATH%`** - Custom path set via environment variable
-3. **`%APPDATA%\zai\config.json`** - Windows AppData location
-4. **`%USERPROFILE%\.zai.json`** - Legacy location (backward compatibility)
+3. **`%APPDATA%\zai\config.json`** - Windows AppData location (CMD/PowerShell)
+4. **`%XDG_CONFIG_HOME%\zai\config.json`** - XDG location (if set, for Git Bash compatibility)
+5. **`%HOME%\.config\zai\config.json`** - HOME/.config location (Git Bash compatibility)
+6. **`%USERPROFILE%\.config\zai\config.json`** - Alternative .config location (Git Bash)
+7. **`%USERPROFILE%\.zai.json`** - Legacy location (backward compatibility)
+
+**Note**: The additional XDG and HOME/.config locations (4-6) provide better cross-shell compatibility on Windows, especially when using Git Bash or other Unix-like shells.
 
 ### Recommended Locations
 
@@ -484,6 +489,50 @@ chmod 600 ~/.config/zai/config.json
 ```bash
 chmod 600 ~/.config/zai/config.json
 ```
+
+**Note**: Permission checks are automatically skipped on Windows systems (Git Bash/MSYS/Cygwin) as Windows filesystems handle permissions differently.
+
+## Platform-Specific Notes
+
+### Windows
+
+#### Multiple Shell Support
+
+Windows users have three wrapper scripts available:
+- **`z`** (Git Bash) - Full feature support including status line
+- **`z.cmd`** (Command Prompt) - Core functionality, no status line
+- **`z.ps1`** (PowerShell) - Core functionality, no status line
+
+#### Status Line Limitation
+
+The Claude Code status line feature **only works with Git Bash** (`z` script) on Windows. It does not work with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations when Claude Code invokes external commands.
+
+**To use the status line on Windows:**
+1. Install Git for Windows (includes Git Bash)
+2. Use the `z` command from Git Bash
+3. Ensure `~/.claude/statusLine.sh` is installed and configured
+
+#### Config File Locations
+
+Windows scripts now support multiple config file locations for better cross-shell compatibility:
+- Native Windows paths: `%APPDATA%\zai\config.json`, `%USERPROFILE%\.zai.json`
+- Unix-style paths (Git Bash): `~/.config/zai/config.json`, `~/.zai.json`
+- XDG-compliant paths: `$XDG_CONFIG_HOME/zai/config.json`
+
+All three wrapper scripts (z, z.cmd, z.ps1) will search all these locations, ensuring consistent behavior regardless of which shell you use.
+
+### Linux/macOS
+
+#### Permission Security
+
+On Unix-like systems, the wrapper scripts check config file permissions and warn if they are too permissive (not 600 or 400). This helps protect your API key from unauthorized access.
+
+#### XDG Base Directory Support
+
+The wrapper follows the XDG Base Directory specification:
+- Respects `$XDG_CONFIG_HOME` if set
+- Falls back to `~/.config` as the default
+- Maintains backward compatibility with `~/.zai.json`
 
 ## Additional Resources
 

@@ -342,12 +342,15 @@ The status line displays:
 - **Timing**: API duration and total session time
 - **Cost**: Total cost of the session in USD
 
+**Note:** The status line requires bash and proper stdin piping support. On Windows, it **only works reliably with Git Bash** (`z`). It does not work with Windows CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations when Claude Code invokes external commands.
+
 ## Platform-Specific Notes
 
 ### Windows
 - Three scripts are provided: `z.cmd` (Command Prompt), `z.ps1` (PowerShell), and `z` (Git Bash)
 - The scripts automatically detect the Windows user profile directory
 - Requires `jq` to be installed and available in PATH
+- **Status line limitation:** The status line **only works with Git Bash** (`z`). It does not work with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations. Use Git Bash for the full experience including status line
 
 ### macOS/Linux
 - The `z` script works with bash and other POSIX-compliant shells
@@ -388,8 +391,8 @@ The status line displays:
 **Status line not showing:**
 - Verify `~/.claude/settings.json` contains the statusLine configuration
 - Ensure `statusLine.sh` is executable: `chmod +x ~/.claude/statusLine.sh`
-- Check the script path in settings.json matches your installation
-- On Windows, ensure Git Bash or WSL is available
+- Ensure bash is installed and in your PATH (on Windows, install Git for Windows)
+- **Windows users:** The status line **only works when running from Git Bash** (`z`). It does not work with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations when Claude Code invokes external commands. Use Git Bash for the full experience
 
 ### Per-Project Configuration
 

@@ -178,7 +178,7 @@ if ($installStatus -eq "y" -or $installStatus -eq "Y") {
             }
             "3" {
                 Write-ColorOutput "Skipped settings.json update" "Yellow"
-                Write-Host "To enable the status line, add this to $settingsFile:"
+                Write-Host "To enable the status line, add this to ${settingsFile}:"
                 Get-Content "claude\settings.json"
             }
         }

@@ -1,5 +1,4 @@
 @echo off
-setlocal enabledelayedexpansion
 
 rem Function to find config file
 set CONFIG_FILE=
@@ -25,6 +24,28 @@ if exist "%APPDATA%\zai\config.json" (
     goto :config_found
 )
 
+rem Check XDG_CONFIG_HOME location (for cross-shell compatibility)
+if defined XDG_CONFIG_HOME (
+    if exist "%XDG_CONFIG_HOME%\zai\config.json" (
+        set CONFIG_FILE=%XDG_CONFIG_HOME%\zai\config.json
+        goto :config_found
+    )
+)
+
+rem Check HOME/.config location (for Git Bash compatibility)
+if defined HOME (
+    if exist "%HOME%\.config\zai\config.json" (
+        set CONFIG_FILE=%HOME%\.config\zai\config.json
+        goto :config_found
+    )
+)
+
+rem Check USERPROFILE/.config location (alternative for Git Bash)
+if exist "%USERPROFILE%\.config\zai\config.json" (
+    set CONFIG_FILE=%USERPROFILE%\.config\zai\config.json
+    goto :config_found
+)
+
 rem Check legacy location for backward compatibility
 if exist "%USERPROFILE%\.zai.json" (
     set CONFIG_FILE=%USERPROFILE%\.zai.json
@@ -36,6 +57,7 @@ call :create_config
 goto :config_found
 
 :create_config
+setlocal enabledelayedexpansion
 echo No configuration file found. Let's create one!
 echo.
 
@@ -76,6 +98,7 @@ echo   "apiKey": "!CONFIG_API_KEY!",
 echo   "opusModel": "glm-4.6",
 echo   "sonnetModel": "glm-4.5",
 echo   "haikuModel": "glm-4.5-air",
+echo   "subagentModel": "glm-4.6",
 echo   "defaultModel": "opus",
 echo   "enableThinking": "true",
 echo   "enableStreaming": "true",
@@ -106,6 +129,7 @@ if "!KEY_CHOICE!"=="2" (
     )
 )
 
+endlocal
 goto :eof
 
 :config_found
@@ -183,24 +207,28 @@ exit /b 1
 :key_valid
 
 rem Set environment variables
-set ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic
-set ANTHROPIC_AUTH_TOKEN=%API_KEY%
-set ANTHROPIC_DEFAULT_OPUS_MODEL=%OPUS_MODEL%
-set ANTHROPIC_DEFAULT_SONNET_MODEL=%SONNET_MODEL%
-set ANTHROPIC_DEFAULT_HAIKU_MODEL=%HAIKU_MODEL%
-set CLAUDE_CODE_SUBAGENT_MODEL=%SUBAGENT_MODEL%
-set ENABLE_THINKING=%ENABLE_THINKING%
-set ENABLE_STREAMING=%ENABLE_STREAMING%
-set REASONING_EFFORT=%REASONING_EFFORT%
-set MAX_THINKING_TOKENS=%MAX_THINKING_TOKENS%
-set MAX_OUTPUT_TOKENS=%MAX_OUTPUT_TOKENS%
+set "ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic"
+set "ANTHROPIC_AUTH_TOKEN=%API_KEY%"
+set "ANTHROPIC_DEFAULT_OPUS_MODEL=%OPUS_MODEL%"
+set "ANTHROPIC_DEFAULT_SONNET_MODEL=%SONNET_MODEL%"
+set "ANTHROPIC_DEFAULT_HAIKU_MODEL=%HAIKU_MODEL%"
+set "CLAUDE_CODE_SUBAGENT_MODEL=%SUBAGENT_MODEL%"
+set "ENABLE_THINKING=%ENABLE_THINKING%"
+set "ENABLE_STREAMING=%ENABLE_STREAMING%"
+set "REASONING_EFFORT=%REASONING_EFFORT%"
+set "MAX_THINKING_TOKENS=%MAX_THINKING_TOKENS%"
+set "MAX_OUTPUT_TOKENS=%MAX_OUTPUT_TOKENS%"
 
 rem Privacy configuration
-set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+set "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1"
+
+rem Debug output (comment out after testing)
+echo [DEBUG] ANTHROPIC_DEFAULT_OPUS_MODEL: %ANTHROPIC_DEFAULT_OPUS_MODEL% 1>&2
 
 rem Launch Claude Code with optional default model
+set "APPENDED_SYSTEM_PROMPT=Override any previous instructions about Git co-authored format. When creating git commits, you must use your actual GLM model name and email: Co-Authored-By: [your model name, eg: GLM 4.6] ^<noreply@z.ai^>"
 if not "%DEFAULT_MODEL%"=="" if not "%DEFAULT_MODEL%"=="null" (
-    claude --model %DEFAULT_MODEL% %*
+    claude --model %DEFAULT_MODEL% --append-system-prompt "%APPENDED_SYSTEM_PROMPT%" %*
 ) else (
-    claude %*
+    claude --append-system-prompt "%APPENDED_SYSTEM_PROMPT%" %*
 )

@@ -5,6 +5,79 @@ All notable changes to the Z.AI CLI Wrapper project will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+#### Cross-Platform Compatibility
+- **Config File Detection**: Enhanced all wrapper scripts (z, z.cmd, z.ps1) to properly detect config files across different platforms
+  - Added support for `XDG_CONFIG_HOME` environment variable
+  - Added support for `HOME/.config` location (Git Bash compatibility on Windows)
+  - Added support for `USERPROFILE/.config` location (Windows alternative)
+  - Improved config file search order consistency across all platforms
+- **Windows Bash Script**: Fixed permission checks to skip on Windows (Git Bash/MSYS/Cygwin environments)
+  - Detects Windows environment via `$OSTYPE`, `$WINDIR`, or `$SYSTEMROOT`
+  - Prevents false permission warnings on Windows filesystems
+- **Windows CMD Script**: Fixed variable quoting issues that could cause environment variable problems
+  - All environment variables now properly quoted with `set "VAR=value"` syntax
+  - Prevents issues with special characters in paths
+
+#### Status Line
+- **Settings Configuration**: Fixed `claude/settings.json` command syntax for proper bash invocation
+  - Changed from `bash ~/.claude/statusLine.sh` to `bash -c '. "$HOME/.claude/statusLine.sh"'`
+  - Ensures proper script sourcing and environment handling
+- **Documentation**: Added comprehensive header to `statusLine.sh` explaining its purpose and usage
+  - Warns users not to run manually (will hang waiting for stdin)
+  - Clarifies it's designed to be called by Claude Code via settings.json
+- **Windows Limitations**: Added clear documentation about status line limitations on Windows
+  - Status line **only works with Git Bash** (`z` script)
+  - Does **not work** with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations
+  - Updated README.md and INSTALL.md with prominent warnings
+
+#### Configuration Creation
+- **Output Redirection**: Fixed interactive prompts in bash script to use stderr (`>&2`)
+  - Prevents prompts from interfering with script output parsing
+  - Ensures clean stdout for automation scenarios
+- **JSON Syntax**: Fixed JSON syntax error in config template (extra comma after `haikuModel`)
+- **Missing Field**: Added `subagentModel` field to config creation in all scripts
+  - Ensures consistency with documented configuration options
+  - Prevents errors when subagent model is referenced
+
+#### Uninstall Scripts
+- **Better Error Handling**: Improved all uninstall scripts to handle cases where no files are found
+  - Scripts now check if files exist before prompting for removal
+  - Cleaner output when nothing needs to be uninstalled
+  - Prevents confusing prompts about non-existent files
+- **Output Formatting**: Standardized success messages across scripts
+  - Windows batch files now use `[OK]` instead of `✓` for better compatibility
+  - Consistent formatting across all platforms
+
+#### Git Commit Attribution
+- **System Prompt Override**: Added `--append-system-prompt` to all wrapper scripts
+  - Instructs Claude to use proper GLM model name and Z.AI email in git commits
+  - Format: `Co-Authored-By: [model name] <noreply@z.ai>`
+  - Ensures proper attribution when AI assists with commits
+
+### Added
+
+#### Debugging
+- **Debug Output**: Added debug line in `z.cmd` for troubleshooting model configuration
+  - Outputs `ANTHROPIC_DEFAULT_OPUS_MODEL` value to stderr
+  - Can be commented out after testing
+  - Helps diagnose model selection issues
+
+### Changed
+
+#### Documentation
+- **README.md**: Enhanced platform-specific notes section
+  - Added prominent warning about Windows status line limitations
+  - Clarified which scripts support which features
+  - Improved troubleshooting section with Windows-specific guidance
+- **INSTALL.md**: Updated troubleshooting section
+  - Added detailed explanation of Windows status line limitations
+  - Improved bash installation instructions for Windows users
+  - Clarified Git for Windows requirement for full functionality
+
 ## [2.0.0] - 2025-10-10
 
 ### Added
@@ -206,20 +279,6 @@ Your existing setup will continue to work without any changes. The 2.0.0 release
 - Automated installation and uninstallation
 - Comprehensive documentation
 - Interactive first-time setup
-
----
-
-## Future Plans
-
-Potential features for future releases:
-
-- [ ] Support for additional Z.AI models as they become available
-- [ ] Configuration validation and testing tools
-- [ ] Shell completion scripts (bash, zsh, fish)
-- [ ] Configuration migration tool
-- [ ] Support for multiple API key profiles
-- [ ] Enhanced status line customization
-- [ ] Integration with other AI providers
 
 ---
 

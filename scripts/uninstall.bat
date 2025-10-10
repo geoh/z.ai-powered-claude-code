@@ -31,7 +31,7 @@ if %FILES_FOUND%==0 (
             if errorlevel 1 (
                 echo Error: Failed to remove %INSTALL_DIR%\z
             ) else (
-                echo ✓ Removed %INSTALL_DIR%\z
+                echo [OK] Removed %INSTALL_DIR%\z
             )
         )
         if exist "%INSTALL_DIR%\z.cmd" (
@@ -39,7 +39,7 @@ if %FILES_FOUND%==0 (
             if errorlevel 1 (
                 echo Error: Failed to remove %INSTALL_DIR%\z.cmd
             ) else (
-                echo ✓ Removed %INSTALL_DIR%\z.cmd
+                echo [OK] Removed %INSTALL_DIR%\z.cmd
             )
         )
         if exist "%INSTALL_DIR%\z.ps1" (
@@ -47,7 +47,7 @@ if %FILES_FOUND%==0 (
             if errorlevel 1 (
                 echo Error: Failed to remove %INSTALL_DIR%\z.ps1
             ) else (
-                echo ✓ Removed %INSTALL_DIR%\z.ps1
+                echo [OK] Removed %INSTALL_DIR%\z.ps1
             )
         )
     ) else (
@@ -74,7 +74,7 @@ if %STATUS_LINE_FOUND%==0 (
             if errorlevel 1 (
                 echo Error: Failed to remove %CLAUDE_DIR%\statusLine.sh
             ) else (
-                echo ✓ Removed %CLAUDE_DIR%\statusLine.sh
+                echo [OK] Removed %CLAUDE_DIR%\statusLine.sh
             )
         )
         
@@ -88,7 +88,7 @@ if %STATUS_LINE_FOUND%==0 (
                 for /f "tokens=1-2 delims=: " %%a in ('time /t') do set TIME=%%a%%b
                 set BACKUP_FILE=%CLAUDE_DIR%\settings.json.backup.!DATE!_!TIME!
                 move "%CLAUDE_DIR%\settings.json" "!BACKUP_FILE!" >nul
-                echo ✓ Backed up and removed settings.json ^(backup: !BACKUP_FILE!^)
+                echo [OK] Backed up and removed settings.json ^(backup: !BACKUP_FILE!^)
             ) else (
                 echo Kept settings.json
                 echo To manually remove the status line, edit %CLAUDE_DIR%\settings.json
@@ -117,47 +117,56 @@ pause
 
 rem Ask about config files
 echo.
-echo Configuration Files
-echo Your Z.AI configuration files may contain your API key and settings.
-echo.
-echo Possible locations:
-if exist "%USERPROFILE%\.zai.json" echo   - %USERPROFILE%\.zai.json ^(found^)
-if exist "%APPDATA%\zai\config.json" echo   - %APPDATA%\zai\config.json ^(found^)
-if exist "%APPDATA%\zai" echo   - %APPDATA%\zai\ directory ^(found^)
-echo.
-set /p REMOVE_CONFIG="Remove configuration files? [y/N]: "
+set CONFIG_FOUND=0
+if exist "%USERPROFILE%\.zai.json" set CONFIG_FOUND=1
+if exist "%APPDATA%\zai\config.json" set CONFIG_FOUND=1
+if exist "%APPDATA%\zai" set CONFIG_FOUND=1
 
-if /i "!REMOVE_CONFIG!"=="y" (
-    if exist "%USERPROFILE%\.zai.json" (
-        del "%USERPROFILE%\.zai.json"
-        if errorlevel 1 (
-            echo Error: Failed to remove %USERPROFILE%\.zai.json
-        ) else (
-            echo ✓ Removed %USERPROFILE%\.zai.json
-        )
-    )
-
-    if exist "%APPDATA%\zai\config.json" (
-        del "%APPDATA%\zai\config.json"
-        if errorlevel 1 (
-            echo Error: Failed to remove %APPDATA%\zai\config.json
-        ) else (
-            echo ✓ Removed %APPDATA%\zai\config.json
-        )
-    )
-
-    if exist "%APPDATA%\zai" (
-        rmdir "%APPDATA%\zai" 2>nul
-        if not exist "%APPDATA%\zai" (
-            echo ✓ Removed %APPDATA%\zai directory
-        )
-    )
-    
-    echo.
-    echo Note: Per-project .zai.json files ^(if any^) were not removed.
-    echo You may want to clean those up manually in your project directories.
+if %CONFIG_FOUND%==0 (
+    echo No Z.AI configuration files found
 ) else (
-    echo Kept configuration files
+    echo Configuration Files
+    echo Your Z.AI configuration files may contain your API key and settings.
+    echo.
+    echo Possible locations:
+    if exist "%USERPROFILE%\.zai.json" echo   - %USERPROFILE%\.zai.json ^(found^)
+    if exist "%APPDATA%\zai\config.json" echo   - %APPDATA%\zai\config.json ^(found^)
+    if exist "%APPDATA%\zai" echo   - %APPDATA%\zai\ directory ^(found^)
+    echo.
+    set /p REMOVE_CONFIG="Remove configuration files? [y/N]: "
+
+    if /i "!REMOVE_CONFIG!"=="y" (
+        if exist "%USERPROFILE%\.zai.json" (
+            del "%USERPROFILE%\.zai.json"
+            if errorlevel 1 (
+                echo Error: Failed to remove %USERPROFILE%\.zai.json
+            ) else (
+                echo [OK] Removed %USERPROFILE%\.zai.json
+            )
+        )
+
+        if exist "%APPDATA%\zai\config.json" (
+            del "%APPDATA%\zai\config.json"
+            if errorlevel 1 (
+                echo Error: Failed to remove %APPDATA%\zai\config.json
+            ) else (
+                echo [OK] Removed %APPDATA%\zai\config.json
+            )
+        )
+
+        if exist "%APPDATA%\zai" (
+            rmdir "%APPDATA%\zai" 2>nul
+            if not exist "%APPDATA%\zai" (
+                echo [OK] Removed %APPDATA%\zai directory
+            )
+        )
+
+        echo.
+        echo Note: Per-project .zai.json files ^(if any^) were not removed.
+        echo You may want to clean those up manually in your project directories.
+    ) else (
+        echo Kept configuration files
+    )
 )
 
 rem Check for ZAI_API_KEY environment variable
@@ -175,7 +184,7 @@ if %ZAI_KEY_SET%==1 (
             echo Error: Failed to remove environment variable.
             echo You may need to remove it manually from System Properties.
         ) else (
-            echo ✓ Removed ZAI_API_KEY environment variable
+            echo [OK] Removed ZAI_API_KEY environment variable
             echo     Please restart your terminal for changes to take effect.
         )
     )

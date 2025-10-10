@@ -1,4 +1,12 @@
 #!/bin/bash
+#
+# Claude Code Status Line Script
+# This script is called by Claude Code with JSON data piped to stdin.
+# It displays model info, git branch, code changes, timing, and cost.
+#
+# DO NOT run this script manually - it will hang waiting for input.
+# It's designed to be called by Claude Code via settings.json.
+#
 
 # Reset to default
 RESET='\033[0m'

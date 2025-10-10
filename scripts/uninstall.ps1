@@ -133,47 +133,56 @@ if ($cleanPath -eq "y" -or $cleanPath -eq "Y") {
 
 # Ask about config files
 Write-Host ""
-Write-ColorOutput "Configuration Files" "Blue"
-Write-Host "Your Z.AI configuration files may contain your API key and settings."
-Write-Host ""
-Write-Host "Possible locations:"
-if (Test-Path "$env:USERPROFILE\.zai.json") {
-    Write-Host "  - $env:USERPROFILE\.zai.json (found)"
-}
-if (Test-Path "$env:APPDATA\zai\config.json") {
-    Write-Host "  - $env:APPDATA\zai\config.json (found)"
-}
-if (Test-Path "$env:APPDATA\zai") {
-    Write-Host "  - $env:APPDATA\zai\ directory (found)"
-}
-Write-Host ""
-$removeConfig = Read-Host "Remove configuration files? [y/N]"
+$configFound = $false
+if (Test-Path "$env:USERPROFILE\.zai.json") { $configFound = $true }
+if (Test-Path "$env:APPDATA\zai\config.json") { $configFound = $true }
+if (Test-Path "$env:APPDATA\zai") { $configFound = $true }
 
-if ($removeConfig -eq "y" -or $removeConfig -eq "Y") {
-    if (Test-Path "$env:USERPROFILE\.zai.json") {
-        Remove-Item "$env:USERPROFILE\.zai.json" -Force
-        Write-ColorOutput "✓ Removed $env:USERPROFILE\.zai.json" "Green"
-    }
-    
-    if (Test-Path "$env:APPDATA\zai\config.json") {
-        Remove-Item "$env:APPDATA\zai\config.json" -Force
-        Write-ColorOutput "✓ Removed $env:APPDATA\zai\config.json" "Green"
-    }
-    
-    if (Test-Path "$env:APPDATA\zai") {
-        try {
-            Remove-Item "$env:APPDATA\zai" -Force -ErrorAction Stop
-            Write-ColorOutput "✓ Removed $env:APPDATA\zai directory" "Green"
-        } catch {
-            # Directory not empty or other error
-        }
-    }
-    
-    Write-Host ""
-    Write-ColorOutput "Note: Per-project .zai.json files (if any) were not removed." "Yellow"
-    Write-Host "You may want to clean those up manually in your project directories."
+if (-not $configFound) {
+    Write-ColorOutput "No Z.AI configuration files found" "Yellow"
 } else {
-    Write-ColorOutput "Kept configuration files" "Yellow"
+    Write-ColorOutput "Configuration Files" "Blue"
+    Write-Host "Your Z.AI configuration files may contain your API key and settings."
+    Write-Host ""
+    Write-Host "Possible locations:"
+    if (Test-Path "$env:USERPROFILE\.zai.json") {
+        Write-Host "  - $env:USERPROFILE\.zai.json (found)"
+    }
+    if (Test-Path "$env:APPDATA\zai\config.json") {
+        Write-Host "  - $env:APPDATA\zai\config.json (found)"
+    }
+    if (Test-Path "$env:APPDATA\zai") {
+        Write-Host "  - $env:APPDATA\zai\ directory (found)"
+    }
+    Write-Host ""
+    $removeConfig = Read-Host "Remove configuration files? [y/N]"
+
+    if ($removeConfig -eq "y" -or $removeConfig -eq "Y") {
+        if (Test-Path "$env:USERPROFILE\.zai.json") {
+            Remove-Item "$env:USERPROFILE\.zai.json" -Force
+            Write-ColorOutput "✓ Removed $env:USERPROFILE\.zai.json" "Green"
+        }
+
+        if (Test-Path "$env:APPDATA\zai\config.json") {
+            Remove-Item "$env:APPDATA\zai\config.json" -Force
+            Write-ColorOutput "✓ Removed $env:APPDATA\zai\config.json" "Green"
+        }
+
+        if (Test-Path "$env:APPDATA\zai") {
+            try {
+                Remove-Item "$env:APPDATA\zai" -Force -ErrorAction Stop
+                Write-ColorOutput "✓ Removed $env:APPDATA\zai directory" "Green"
+            } catch {
+                # Directory not empty or other error
+            }
+        }
+
+        Write-Host ""
+        Write-ColorOutput "Note: Per-project .zai.json files (if any) were not removed." "Yellow"
+        Write-Host "You may want to clean those up manually in your project directories."
+    } else {
+        Write-ColorOutput "Kept configuration files" "Yellow"
+    }
 }
 
 # Check for ZAI_API_KEY environment variable

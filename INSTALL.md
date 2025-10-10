@@ -373,8 +373,9 @@ Install jq using your package manager (see [Installing jq](#installing-jq))
 **Solutions:**
 1. Verify `~/.claude/settings.json` exists and contains statusLine configuration
 2. Check that `statusLine.sh` is executable: `chmod +x ~/.claude/statusLine.sh`
-3. On Windows, ensure Git Bash is installed and in PATH
-4. Verify the path in settings.json matches your installation
+3. Ensure bash is installed and in your PATH (on Windows, install Git for Windows)
+4. **Windows users:** The status line **only works when running from Git Bash** (`z`). It does **not** work with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations when Claude Code invokes external commands. Use Git Bash for the full experience
+5. On Unix/Linux/macOS, ensure the script path in settings.json is correct
 
 ### Installation Script Fails
 

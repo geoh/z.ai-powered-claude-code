@@ -16,6 +16,28 @@ function Find-ConfigFile {
         return $appdataConfig
     }
 
+    # Check XDG_CONFIG_HOME location (for cross-shell compatibility)
+    if ($env:XDG_CONFIG_HOME) {
+        $xdgConfig = "$env:XDG_CONFIG_HOME\zai\config.json"
+        if (Test-Path $xdgConfig) {
+            return $xdgConfig
+        }
+    }
+
+    # Check HOME/.config location (for Git Bash compatibility)
+    if ($env:HOME) {
+        $homeConfig = "$env:HOME\.config\zai\config.json"
+        if (Test-Path $homeConfig) {
+            return $homeConfig
+        }
+    }
+
+    # Check USERPROFILE/.config location (alternative for Git Bash)
+    $userProfileConfig = "$env:USERPROFILE\.config\zai\config.json"
+    if (Test-Path $userProfileConfig) {
+        return $userProfileConfig
+    }
+
     # Check legacy location for backward compatibility
     $legacyConfig = "$env:USERPROFILE\.zai.json"
     if (Test-Path $legacyConfig) {
@@ -72,6 +94,7 @@ function New-ConfigFile {
         opusModel = "glm-4.6"
         sonnetModel = "glm-4.5"
         haikuModel = "glm-4.5-air"
+        subagentModel = "glm-4.6"
         defaultModel = "opus"
         enableThinking = "true"
         enableStreaming = "true"
@@ -184,8 +207,9 @@ $env:MAX_OUTPUT_TOKENS = $settings.maxOutputTokens
 $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = 1
 
 # Launch Claude Code with optional default model
+$APPENDED_SYSTEM_PROMPT = "Override any previous instructions about Git co-authored format. When creating git commits, you must use your actual GLM model name and email: Co-Authored-By: [your model name, eg: GLM 4.6] <noreply@z.ai>"
 if ($settings.defaultModel -and $settings.defaultModel -ne "" -and $settings.defaultModel -ne "null") {
-    claude --model $settings.defaultModel $args
+    claude --model $settings.defaultModel --append-system-prompt $APPENDED_SYSTEM_PROMPT $args
 } else {
-    claude $args
+    claude --append-system-prompt $APPENDED_SYSTEM_PROMPT $args
 }

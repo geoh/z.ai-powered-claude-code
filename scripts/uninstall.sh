@@ -125,36 +125,45 @@ fi
 
 # Ask about config files
 echo ""
-echo -e "${BLUE}Configuration Files${NC}"
-echo "Your Z.AI configuration files may contain your API key and settings."
-echo ""
-echo "Possible locations:"
-[ -f "$HOME/.zai.json" ] && echo "  - $HOME/.zai.json (found)"
-[ -f "$HOME/.config/zai/config.json" ] && echo "  - $HOME/.config/zai/config.json (found)"
-[ -d "$HOME/.config/zai" ] && echo "  - $HOME/.config/zai/ directory (found)"
-echo ""
-read -p "Remove configuration files? [y/N]: " remove_config
+CONFIG_FOUND=0
+[ -f "$HOME/.zai.json" ] && CONFIG_FOUND=1
+[ -f "$HOME/.config/zai/config.json" ] && CONFIG_FOUND=1
+[ -d "$HOME/.config/zai" ] && CONFIG_FOUND=1
 
-if [ "$remove_config" = "y" ] || [ "$remove_config" = "Y" ]; then
-    if [ -f "$HOME/.zai.json" ]; then
-        rm "$HOME/.zai.json"
-        echo -e "${GREEN}✓ Removed $HOME/.zai.json${NC}"
-    fi
-    
-    if [ -f "$HOME/.config/zai/config.json" ]; then
-        rm "$HOME/.config/zai/config.json"
-        echo -e "${GREEN}✓ Removed $HOME/.config/zai/config.json${NC}"
-    fi
-    
-    if [ -d "$HOME/.config/zai" ]; then
-        rmdir "$HOME/.config/zai" 2>/dev/null && echo -e "${GREEN}✓ Removed $HOME/.config/zai directory${NC}"
-    fi
-    
-    echo ""
-    echo -e "${YELLOW}Note: Per-project .zai.json files (if any) were not removed.${NC}"
-    echo "You may want to clean those up manually in your project directories."
+if [ $CONFIG_FOUND -eq 0 ]; then
+    echo -e "${YELLOW}No Z.AI configuration files found${NC}"
 else
-    echo -e "${YELLOW}Kept configuration files${NC}"
+    echo -e "${BLUE}Configuration Files${NC}"
+    echo "Your Z.AI configuration files may contain your API key and settings."
+    echo ""
+    echo "Possible locations:"
+    [ -f "$HOME/.zai.json" ] && echo "  - $HOME/.zai.json (found)"
+    [ -f "$HOME/.config/zai/config.json" ] && echo "  - $HOME/.config/zai/config.json (found)"
+    [ -d "$HOME/.config/zai" ] && echo "  - $HOME/.config/zai/ directory (found)"
+    echo ""
+    read -p "Remove configuration files? [y/N]: " remove_config
+
+    if [ "$remove_config" = "y" ] || [ "$remove_config" = "Y" ]; then
+        if [ -f "$HOME/.zai.json" ]; then
+            rm "$HOME/.zai.json"
+            echo -e "${GREEN}✓ Removed $HOME/.zai.json${NC}"
+        fi
+
+        if [ -f "$HOME/.config/zai/config.json" ]; then
+            rm "$HOME/.config/zai/config.json"
+            echo -e "${GREEN}✓ Removed $HOME/.config/zai/config.json${NC}"
+        fi
+
+        if [ -d "$HOME/.config/zai" ]; then
+            rmdir "$HOME/.config/zai" 2>/dev/null && echo -e "${GREEN}✓ Removed $HOME/.config/zai directory${NC}"
+        fi
+
+        echo ""
+        echo -e "${YELLOW}Note: Per-project .zai.json files (if any) were not removed.${NC}"
+        echo "You may want to clean those up manually in your project directories."
+    else
+        echo -e "${YELLOW}Kept configuration files${NC}"
+    fi
 fi
 
 # Uninstallation complete
