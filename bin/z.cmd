@@ -92,7 +92,7 @@ if "!KEY_CHOICE!"=="2" (
     rem Set in current session immediately
     set ZAI_API_KEY=!API_KEY_INPUT!
     echo.
-    echo [OK] ZAI_API_KEY set for current session
+    echo ✓ ZAI_API_KEY set for current session
     echo.
     echo To make this permanent, run:
     echo   setx ZAI_API_KEY "!API_KEY_INPUT!"

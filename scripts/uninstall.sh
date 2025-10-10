@@ -105,11 +105,12 @@ if [ "$clean_path" = "y" ] || [ "$clean_path" = "Y" ]; then
                     # Create backup
                     BACKUP_FILE="$profile.backup.$(date +%Y%m%d_%H%M%S)"
                     cp "$profile" "$BACKUP_FILE"
-                    
+
                     # Remove lines containing .local/bin and the comment before it
-                    sed -i.tmp '/# Added by Z.AI CLI wrapper installer/d; /\.local\/bin/d' "$profile"
-                    rm -f "$profile.tmp"
-                    
+                    # Use a temp file for cross-platform compatibility (GNU sed vs BSD sed)
+                    grep -v '# Added by Z.AI CLI wrapper installer' "$profile" | grep -v '\.local/bin' > "$profile.tmp"
+                    mv "$profile.tmp" "$profile"
+
                     echo -e "${GREEN}✓ Removed from $profile (backup: $BACKUP_FILE)${NC}"
                 fi
             fi

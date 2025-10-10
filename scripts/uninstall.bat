@@ -28,15 +28,27 @@ if %FILES_FOUND%==0 (
     if /i "!REMOVE_SCRIPTS!"=="y" (
         if exist "%INSTALL_DIR%\z" (
             del "%INSTALL_DIR%\z"
-            echo [OK] Removed %INSTALL_DIR%\z
+            if errorlevel 1 (
+                echo Error: Failed to remove %INSTALL_DIR%\z
+            ) else (
+                echo ✓ Removed %INSTALL_DIR%\z
+            )
         )
         if exist "%INSTALL_DIR%\z.cmd" (
             del "%INSTALL_DIR%\z.cmd"
-            echo [OK] Removed %INSTALL_DIR%\z.cmd
+            if errorlevel 1 (
+                echo Error: Failed to remove %INSTALL_DIR%\z.cmd
+            ) else (
+                echo ✓ Removed %INSTALL_DIR%\z.cmd
+            )
         )
         if exist "%INSTALL_DIR%\z.ps1" (
             del "%INSTALL_DIR%\z.ps1"
-            echo [OK] Removed %INSTALL_DIR%\z.ps1
+            if errorlevel 1 (
+                echo Error: Failed to remove %INSTALL_DIR%\z.ps1
+            ) else (
+                echo ✓ Removed %INSTALL_DIR%\z.ps1
+            )
         )
     ) else (
         echo Skipped removing wrapper scripts
@@ -59,7 +71,11 @@ if %STATUS_LINE_FOUND%==0 (
     if /i "!REMOVE_STATUS!"=="y" (
         if exist "%CLAUDE_DIR%\statusLine.sh" (
             del "%CLAUDE_DIR%\statusLine.sh"
-            echo [OK] Removed %CLAUDE_DIR%\statusLine.sh
+            if errorlevel 1 (
+                echo Error: Failed to remove %CLAUDE_DIR%\statusLine.sh
+            ) else (
+                echo ✓ Removed %CLAUDE_DIR%\statusLine.sh
+            )
         )
         
         if exist "%CLAUDE_DIR%\settings.json" (
@@ -72,7 +88,7 @@ if %STATUS_LINE_FOUND%==0 (
                 for /f "tokens=1-2 delims=: " %%a in ('time /t') do set TIME=%%a%%b
                 set BACKUP_FILE=%CLAUDE_DIR%\settings.json.backup.!DATE!_!TIME!
                 move "%CLAUDE_DIR%\settings.json" "!BACKUP_FILE!" >nul
-                echo [OK] Backed up and removed settings.json ^(backup: !BACKUP_FILE!^)
+                echo ✓ Backed up and removed settings.json ^(backup: !BACKUP_FILE!^)
             ) else (
                 echo Kept settings.json
                 echo To manually remove the status line, edit %CLAUDE_DIR%\settings.json
@@ -114,18 +130,26 @@ set /p REMOVE_CONFIG="Remove configuration files? [y/N]: "
 if /i "!REMOVE_CONFIG!"=="y" (
     if exist "%USERPROFILE%\.zai.json" (
         del "%USERPROFILE%\.zai.json"
-        echo [OK] Removed %USERPROFILE%\.zai.json
+        if errorlevel 1 (
+            echo Error: Failed to remove %USERPROFILE%\.zai.json
+        ) else (
+            echo ✓ Removed %USERPROFILE%\.zai.json
+        )
     )
-    
+
     if exist "%APPDATA%\zai\config.json" (
         del "%APPDATA%\zai\config.json"
-        echo [OK] Removed %APPDATA%\zai\config.json
+        if errorlevel 1 (
+            echo Error: Failed to remove %APPDATA%\zai\config.json
+        ) else (
+            echo ✓ Removed %APPDATA%\zai\config.json
+        )
     )
-    
+
     if exist "%APPDATA%\zai" (
         rmdir "%APPDATA%\zai" 2>nul
         if not exist "%APPDATA%\zai" (
-            echo [OK] Removed %APPDATA%\zai directory
+            echo ✓ Removed %APPDATA%\zai directory
         )
     )
     
@@ -151,7 +175,7 @@ if %ZAI_KEY_SET%==1 (
             echo Error: Failed to remove environment variable.
             echo You may need to remove it manually from System Properties.
         ) else (
-            echo [OK] Removed ZAI_API_KEY environment variable
+            echo ✓ Removed ZAI_API_KEY environment variable
             echo     Please restart your terminal for changes to take effect.
         )
     )

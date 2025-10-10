@@ -124,7 +124,7 @@ Configuration files use JSON format with the following options:
 - **Default**: `"high"`
 - **Description**: Level of reasoning effort for AI thinking
 - **Options**: `"auto"`, `"low"`, `"medium"`, `"high"`, `"max"`
-- **Note**: Experimental feature
+- **Note**: Experimental feature. These settings are passed through to the API, but actual behavior depends on the Z.AI API's implementation and may not be fully supported
 
 #### maxThinkingTokens
 - **Type**: String (number)
@@ -489,5 +489,5 @@ chmod 600 ~/.config/zai/config.json
 
 - [README.md](README.md) - Overview and quick start
 - [INSTALL.md](INSTALL.md) - Installation guide
-- [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) - Technical details
+- [CONFIG_EXAMPLE.md](CONFIG_EXAMPLE.md) - Annotated configuration examples
 

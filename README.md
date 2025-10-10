@@ -328,7 +328,7 @@ Configure AI thinking through your configuration file:
 }
 ```
 
-**Note:** These features are experimental and depend on Z.AI API support.
+**Note:** These features are experimental and may not be fully supported by the Z.AI API. The `reasoningEffort` option supports values: "auto", "low", "medium", "high", or "max". These settings are passed through to the API, but actual behavior depends on the API's implementation.
 
 ## Status Line Features
 
@@ -418,7 +418,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 - **[INSTALL.md](INSTALL.md)**: Comprehensive installation guide with troubleshooting
 - **[CONFIGURATION.md](CONFIGURATION.md)**: Detailed configuration reference and examples
-- **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)**: Technical implementation details
+- **[CONFIG_EXAMPLE.md](CONFIG_EXAMPLE.md)**: Annotated configuration file examples
 
 ## Security Best Practices
 

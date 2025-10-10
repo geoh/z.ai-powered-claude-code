@@ -209,7 +209,7 @@ z --model haiku
 
 **Trade-off:** Higher effort = better quality but slower responses.
 
-**Note:** Experimental feature, depends on Z.AI API support.
+**Note:** Experimental feature. These settings are passed through to the API, but actual behavior depends on the Z.AI API's implementation and may not be fully supported.
 
 ---
 
@@ -229,7 +229,7 @@ z --model haiku
 
 **Use Case:** Limit thinking tokens to control costs or response time.
 
-**Note:** Experimental feature, depends on Z.AI API support.
+**Note:** Experimental feature. These settings are passed through to the API, but actual behavior depends on the Z.AI API's implementation and may not be fully supported.
 
 ---
 

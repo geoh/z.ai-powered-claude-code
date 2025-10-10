@@ -49,7 +49,7 @@ get_model_name() { echo "$input" | jq -r '.model.display_name'; }
 get_current_dir() { echo "$input" | jq -r '.workspace.current_dir'; }
 get_project_dir() { echo "$input" | jq -r '.workspace.project_dir'; }
 get_version() { echo "$input" | jq -r '.version'; }
-get_output_stype() { echo "$input" | jq -r '.output_style.name'; }
+get_output_style() { echo "$input" | jq -r '.output_style.name'; }
 get_cost() { echo "$input" | jq -r '.cost.total_cost_usd'; }
 get_duration() { echo "$input" | jq -r '.cost.total_duration_ms'; }
 get_api_duration() { echo "$input" | jq -r '.cost.total_api_duration_ms'; }

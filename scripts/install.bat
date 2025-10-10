@@ -68,10 +68,22 @@ if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 rem Copy wrapper scripts
 echo Installing wrapper scripts...
 copy /Y "bin\z" "%INSTALL_DIR%\z" >nul
+if errorlevel 1 (
+    echo Error: Failed to copy bin\z
+    exit /b 1
+)
 copy /Y "bin\z.cmd" "%INSTALL_DIR%\z.cmd" >nul
+if errorlevel 1 (
+    echo Error: Failed to copy bin\z.cmd
+    exit /b 1
+)
 copy /Y "bin\z.ps1" "%INSTALL_DIR%\z.ps1" >nul
+if errorlevel 1 (
+    echo Error: Failed to copy bin\z.ps1
+    exit /b 1
+)
 
-echo [OK] Wrapper scripts installed to %INSTALL_DIR%
+echo ✓ Wrapper scripts installed to %INSTALL_DIR%
 
 rem Check if INSTALL_DIR is in PATH
 echo %PATH% | find /i "%INSTALL_DIR%" >nul
@@ -89,7 +101,7 @@ if errorlevel 1 (
             echo To add manually, run:
             echo   setx PATH "%%PATH%%;%INSTALL_DIR%"
         ) else (
-            echo [OK] Added %INSTALL_DIR% to your PATH
+            echo ✓ Added %INSTALL_DIR% to your PATH
             echo     Please restart your terminal for changes to take effect.
         )
     ) else (
@@ -98,7 +110,7 @@ if errorlevel 1 (
         echo   setx PATH "%%PATH%%;%INSTALL_DIR%"
     )
 ) else (
-    echo [OK] %INSTALL_DIR% is already in your PATH
+    echo ✓ %INSTALL_DIR% is already in your PATH
 )
 
 rem Ask about Claude status line installation
@@ -116,8 +128,12 @@ if /i "!INSTALL_STATUS!"=="y" (
     
     rem Copy status line script
     copy /Y "claude\statusLine.sh" "%CLAUDE_DIR%\statusLine.sh" >nul
-    
-    echo [OK] Status line script installed to %CLAUDE_DIR%
+    if errorlevel 1 (
+        echo Error: Failed to copy statusLine.sh
+        exit /b 1
+    )
+
+    echo ✓ Status line script installed to %CLAUDE_DIR%
     
     rem Handle settings.json
     set SETTINGS_FILE=%CLAUDE_DIR%\settings.json
@@ -137,7 +153,7 @@ if /i "!INSTALL_STATUS!"=="y" (
             set BACKUP_FILE=!SETTINGS_FILE!.backup.!DATE!_!TIME!
             move "!SETTINGS_FILE!" "!BACKUP_FILE!" >nul
             copy /Y "claude\settings.json" "!SETTINGS_FILE!" >nul
-            echo [OK] Settings replaced ^(backup saved to !BACKUP_FILE!^)
+            echo ✓ Settings replaced ^(backup saved to !BACKUP_FILE!^)
         ) else (
             echo Skipped settings.json update
             echo To enable the status line, add this to !SETTINGS_FILE!:
@@ -146,7 +162,7 @@ if /i "!INSTALL_STATUS!"=="y" (
     ) else (
         rem No existing settings, just copy
         copy /Y "claude\settings.json" "!SETTINGS_FILE!" >nul
-        echo [OK] Settings file created
+        echo ✓ Settings file created
     )
     
     rem Note about Git Bash requirement
