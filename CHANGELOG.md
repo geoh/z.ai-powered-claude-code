@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - API key entry
   - Configuration location selection (user home vs. project directory)
   - API key storage method (config file vs. environment variable)
-  - Automatic environment variable setup
+  - Automatic environment variable setup with immediate effect (no terminal restart required)
 - **File Permission Checks** (Unix): Warns if config files have overly permissive permissions
 - **Automatic Permission Setting** (Unix): Sets chmod 600 on newly created config files
 
@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `scripts/install.sh` for Linux/macOS with shell profile detection and PATH management
   - `scripts/install.ps1` for Windows PowerShell with user PATH management
   - `scripts/install.bat` for Windows CMD with setx PATH management
+  - Automatic detection of existing installations with upgrade/reinstall option
+  - Seamless upgrade path for future versions
 - **Automated Uninstallation Scripts** (in `scripts/` directory):
   - `scripts/uninstall.sh` for Linux/macOS with PATH cleanup
   - `scripts/uninstall.ps1` for Windows PowerShell with PATH and environment variable cleanup
@@ -98,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Improved Config Validation**: Better validation of API keys and config values
 - **Modular Functions**: Refactored scripts with helper functions for better maintainability
 - **Config Merging**: Implemented shallow merge for per-project configs
+- **Immediate Environment Variable Setup**: API keys set via environment variable during interactive setup are now immediately available in the current session (no terminal restart required)
 
 ### Security
 

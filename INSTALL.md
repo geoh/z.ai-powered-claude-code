@@ -75,6 +75,8 @@ Download from [https://stedolan.github.io/jq/download/](https://stedolan.github.
 
 The automated installers handle everything: copying files, setting up PATH, and optionally installing the Claude status line.
 
+**Note:** If you already have Z.AI installed, the installer will detect it and offer to upgrade/reinstall. This makes updating to new versions seamless.
+
 ### Linux/macOS
 
 1. Clone or download this repository
@@ -86,6 +88,7 @@ bash scripts/install.sh
 ```
 
 The installer will:
+- Detect and offer to upgrade existing installations
 - Check for jq dependency
 - Copy wrapper scripts to `~/.local/bin`
 - Make scripts executable
@@ -105,11 +108,11 @@ The installer will:
 ```
 
 The installer will:
+- Detect and offer to upgrade existing installations
 - Check for jq dependency
 - Copy wrapper scripts to `%USERPROFILE%\.local\bin`
 - Optionally add to user PATH using `[Environment]::SetEnvironmentVariable`
 - Optionally install Claude status line configuration
-- Inform you to restart your terminal
 
 ### Windows (Command Prompt)
 
@@ -123,11 +126,11 @@ scripts\install.bat
 ```
 
 The installer will:
+- Detect and offer to upgrade existing installations
 - Check for jq dependency
 - Copy wrapper scripts to `%USERPROFILE%\.local\bin`
 - Optionally add to PATH using `setx` command
 - Optionally install Claude status line configuration
-- Inform you to restart your terminal
 
 ## Manual Installation
 
@@ -303,6 +306,13 @@ z
 ```
 
 This should launch the interactive configuration wizard if no config file exists.
+
+**What to expect:**
+- You'll be prompted for your Z.AI API key
+- Choose between storing in a config file or environment variable
+- If you choose environment variable, it will be set immediately in your current session
+- You can start using Z.AI right away without restarting your terminal
+- The wizard will optionally add the environment variable to your shell profile for persistence
 
 ### 4. Test with Help Command
 

@@ -41,12 +41,13 @@ scripts\install.bat
 ```
 
 The installer will:
+- Detect and offer to upgrade existing installations
 - Copy wrapper scripts to `~/.local/bin` (or `%USERPROFILE%\.local\bin` on Windows)
 - Optionally add the directory to your PATH
 - Optionally install Claude status line configuration
 - Guide you through first-time configuration
 
-After installation, simply run `z` to start the interactive configuration wizard.
+After installation, simply run `z` to start the interactive configuration wizard. If you choose to store your API key as an environment variable, it will be set immediately in your current session—no need to restart your terminal!
 
 ## Configuration
 
@@ -231,6 +232,26 @@ mkdir %USERPROFILE%\.claude
 copy claude\statusLine.sh %USERPROFILE%\.claude\
 copy claude\settings.json %USERPROFILE%\.claude\
 ```
+
+## Upgrading
+
+To upgrade to a new version of Z.AI wrapper:
+
+1. Pull the latest changes from the repository (or download the new version)
+2. Run the installation script again:
+
+```bash
+# Linux/macOS
+bash scripts/install.sh
+
+# Windows (PowerShell)
+.\scripts\install.ps1
+
+# Windows (CMD)
+scripts\install.bat
+```
+
+The installer will detect your existing installation and offer to upgrade. Your configuration files will be preserved.
 
 ## Uninstallation
 
