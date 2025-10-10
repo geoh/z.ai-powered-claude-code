@@ -1,26 +1,232 @@
 #!/bin/bash
 
-# Read the configuration file
-CONFIG_FILE="$HOME/.zai.json"
+# Function to find config file
+find_config_file() {
+    # Check for per-project config first
+    if [ -f ".zai.json" ]; then
+        echo ".zai.json"
+        return 0
+    fi
 
-# Check if the config file exists
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "Error: Configuration file $CONFIG_FILE not found."
-    exit 1
+    # Check ZAI_CONFIG_PATH environment variable
+    if [ -n "$ZAI_CONFIG_PATH" ] && [ -f "$ZAI_CONFIG_PATH" ]; then
+        echo "$ZAI_CONFIG_PATH"
+        return 0
+    fi
+
+    # Check XDG_CONFIG_HOME
+    if [ -n "$XDG_CONFIG_HOME" ] && [ -f "$XDG_CONFIG_HOME/zai/config.json" ]; then
+        echo "$XDG_CONFIG_HOME/zai/config.json"
+        return 0
+    fi
+
+    # Check XDG default location
+    if [ -f "$HOME/.config/zai/config.json" ]; then
+        echo "$HOME/.config/zai/config.json"
+        return 0
+    fi
+
+    # Check legacy location for backward compatibility
+    if [ -f "$HOME/.zai.json" ]; then
+        echo "$HOME/.zai.json"
+        return 0
+    fi
+
+    return 1
+}
+
+# Function to check file permissions (Unix security)
+check_permissions() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        local perms=$(stat -c "%a" "$file" 2>/dev/null || stat -f "%A" "$file" 2>/dev/null)
+        if [ -n "$perms" ] && [ "$perms" != "600" ] && [ "$perms" != "400" ]; then
+            echo "Warning: Config file $file has overly permissive permissions ($perms)." >&2
+            echo "Consider running: chmod 600 $file" >&2
+        fi
+    fi
+}
+
+# Function to create config file interactively
+create_config() {
+    local config_path="$1"
+
+    echo "No configuration file found. Let's create one!"
+    echo
+
+    # Ask for API key
+    read -p "Enter your Z.AI API key: " api_key
+    if [ -z "$api_key" ]; then
+        echo "Error: API key cannot be empty."
+        exit 1
+    fi
+
+    # Ask where to store
+    echo
+    echo "Where would you like to store the configuration?"
+    echo "1) User home directory (~/.config/zai/config.json)"
+    echo "2) Current project directory (./.zai.json)"
+    read -p "Choose [1-2]: " choice
+
+    case "$choice" in
+        1)
+            config_path="$HOME/.config/zai/config.json"
+            mkdir -p "$HOME/.config/zai"
+            ;;
+        2)
+            config_path="./.zai.json"
+            ;;
+        *)
+            echo "Invalid choice. Using user home directory."
+            config_path="$HOME/.config/zai/config.json"
+            mkdir -p "$HOME/.config/zai"
+            ;;
+    esac
+
+    # Ask if they want to store API key in config or environment
+    echo
+    echo "How would you like to store your API key?"
+    echo "1) In the config file (convenient)"
+    echo "2) As an environment variable ZAI_API_KEY (more secure)"
+    read -p "Choose [1-2]: " key_choice
+
+    local config_api_key="your-api-key"
+    if [ "$key_choice" = "1" ]; then
+        config_api_key="$api_key"
+    fi
+
+    # Create config file with defaults
+    cat > "$config_path" << EOF
+{
+  "apiKey": "$config_api_key",
+  "opusModel": "glm-4.6",
+  "sonnetModel": "glm-4.5",
+  "haikuModel": "glm-4.5-air",
+  "defaultModel": "opus",
+  "enableThinking": "true",
+  "enableStreaming": "true",
+  "reasoningEffort": "high",
+  "maxThinkingTokens": "",
+  "maxOutputTokens": ""
+}
+EOF
+
+    # Set secure permissions
+    chmod 600 "$config_path"
+
+    echo
+    echo "Configuration file created at: $config_path"
+
+    # If user chose environment variable, help them set it up
+    if [ "$key_choice" = "2" ]; then
+        echo
+        echo "To set the ZAI_API_KEY environment variable, add this to your shell profile:"
+        echo "  export ZAI_API_KEY=\"$api_key\""
+        echo
+        echo "For bash, add to ~/.bashrc or ~/.bash_profile"
+        echo "For zsh, add to ~/.zshrc"
+        echo
+        read -p "Would you like me to add it to your shell profile now? [y/N]: " add_env
+        if [ "$add_env" = "y" ] || [ "$add_env" = "Y" ]; then
+            # Detect shell and add to appropriate profile
+            if [ -n "$ZSH_VERSION" ]; then
+                echo "export ZAI_API_KEY=\"$api_key\"" >> "$HOME/.zshrc"
+                echo "Added to ~/.zshrc"
+            elif [ -n "$BASH_VERSION" ]; then
+                if [ -f "$HOME/.bashrc" ]; then
+                    echo "export ZAI_API_KEY=\"$api_key\"" >> "$HOME/.bashrc"
+                    echo "Added to ~/.bashrc"
+                else
+                    echo "export ZAI_API_KEY=\"$api_key\"" >> "$HOME/.bash_profile"
+                    echo "Added to ~/.bash_profile"
+                fi
+            fi
+            echo "Please restart your terminal or source your profile for changes to take effect."
+        fi
+    fi
+
+    echo "$config_path"
+}
+
+# Find or create config file
+CONFIG_FILE=$(find_config_file)
+if [ $? -ne 0 ]; then
+    CONFIG_FILE=$(create_config)
 fi
 
-# Extract values using jq
-API_KEY=$(jq -r '.apiKey' "$CONFIG_FILE")
-OPUS_MODEL=$(jq -r '.opusModel' "$CONFIG_FILE")
-SONNET_MODEL=$(jq -r '.sonnetModel' "$CONFIG_FILE")
-HAIKU_MODEL=$(jq -r '.haikuModel' "$CONFIG_FILE")
-SUBAGENT_MODEL=$(jq -r '.subagentModel' "$CONFIG_FILE")
-DEFAULT_MODEL=$(jq -r '.defaultModel' "$CONFIG_FILE")
-ENABLE_THINKING=$(jq -r '.enableThinking' "$CONFIG_FILE")
-ENABLE_STREAMING=$(jq -r '.enableStreaming' "$CONFIG_FILE")
-REASONING_EFFORT=$(jq -r '.reasoningEffort' "$CONFIG_FILE")  # Values: "auto", "low", "medium", "high", or "max"
-MAX_THINKING_TOKENS=$(jq -r '.maxThinkingTokens' "$CONFIG_FILE")
-MAX_OUTPUT_TOKENS=$(jq -r '.maxOutputTokens' "$CONFIG_FILE")
+# Check for per-project config to merge
+PROJECT_CONFIG=""
+GLOBAL_CONFIG="$CONFIG_FILE"
+if [ "$CONFIG_FILE" != ".zai.json" ] && [ -f ".zai.json" ]; then
+    PROJECT_CONFIG=".zai.json"
+fi
+
+# Check permissions on config files
+check_permissions "$GLOBAL_CONFIG"
+if [ -n "$PROJECT_CONFIG" ]; then
+    check_permissions "$PROJECT_CONFIG"
+fi
+
+# Extract values from global config using jq
+API_KEY=$(jq -r '.apiKey // "null"' "$GLOBAL_CONFIG")
+OPUS_MODEL=$(jq -r '.opusModel // "null"' "$GLOBAL_CONFIG")
+SONNET_MODEL=$(jq -r '.sonnetModel // "null"' "$GLOBAL_CONFIG")
+HAIKU_MODEL=$(jq -r '.haikuModel // "null"' "$GLOBAL_CONFIG")
+SUBAGENT_MODEL=$(jq -r '.subagentModel // "null"' "$GLOBAL_CONFIG")
+DEFAULT_MODEL=$(jq -r '.defaultModel // "null"' "$GLOBAL_CONFIG")
+ENABLE_THINKING=$(jq -r '.enableThinking // "null"' "$GLOBAL_CONFIG")
+ENABLE_STREAMING=$(jq -r '.enableStreaming // "null"' "$GLOBAL_CONFIG")
+REASONING_EFFORT=$(jq -r '.reasoningEffort // "null"' "$GLOBAL_CONFIG")
+MAX_THINKING_TOKENS=$(jq -r '.maxThinkingTokens // "null"' "$GLOBAL_CONFIG")
+MAX_OUTPUT_TOKENS=$(jq -r '.maxOutputTokens // "null"' "$GLOBAL_CONFIG")
+
+# Override with project config if present (shallow merge)
+if [ -n "$PROJECT_CONFIG" ]; then
+    PROJECT_API_KEY=$(jq -r '.apiKey // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_API_KEY" != "null" ] && API_KEY="$PROJECT_API_KEY"
+
+    PROJECT_OPUS=$(jq -r '.opusModel // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_OPUS" != "null" ] && OPUS_MODEL="$PROJECT_OPUS"
+
+    PROJECT_SONNET=$(jq -r '.sonnetModel // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_SONNET" != "null" ] && SONNET_MODEL="$PROJECT_SONNET"
+
+    PROJECT_HAIKU=$(jq -r '.haikuModel // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_HAIKU" != "null" ] && HAIKU_MODEL="$PROJECT_HAIKU"
+
+    PROJECT_SUBAGENT=$(jq -r '.subagentModel // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_SUBAGENT" != "null" ] && SUBAGENT_MODEL="$PROJECT_SUBAGENT"
+
+    PROJECT_DEFAULT=$(jq -r '.defaultModel // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_DEFAULT" != "null" ] && DEFAULT_MODEL="$PROJECT_DEFAULT"
+
+    PROJECT_THINKING=$(jq -r '.enableThinking // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_THINKING" != "null" ] && ENABLE_THINKING="$PROJECT_THINKING"
+
+    PROJECT_STREAMING=$(jq -r '.enableStreaming // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_STREAMING" != "null" ] && ENABLE_STREAMING="$PROJECT_STREAMING"
+
+    PROJECT_EFFORT=$(jq -r '.reasoningEffort // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_EFFORT" != "null" ] && REASONING_EFFORT="$PROJECT_EFFORT"
+
+    PROJECT_MAX_THINKING=$(jq -r '.maxThinkingTokens // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_MAX_THINKING" != "null" ] && MAX_THINKING_TOKENS="$PROJECT_MAX_THINKING"
+
+    PROJECT_MAX_OUTPUT=$(jq -r '.maxOutputTokens // "null"' "$PROJECT_CONFIG")
+    [ "$PROJECT_MAX_OUTPUT" != "null" ] && MAX_OUTPUT_TOKENS="$PROJECT_MAX_OUTPUT"
+fi
+
+# Environment variable takes highest priority for API key
+if [ -n "$ZAI_API_KEY" ]; then
+    API_KEY="$ZAI_API_KEY"
+fi
+
+# Validate API key
+if [ -z "$API_KEY" ] || [ "$API_KEY" = "null" ] || [ "$API_KEY" = "your-api-key" ]; then
+    echo "Error: Valid API key not found." >&2
+    echo "Please set ZAI_API_KEY environment variable or configure apiKey in your config file." >&2
+    exit 1
+fi
 
 # Set environment variables for Z.AI
 export ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic"

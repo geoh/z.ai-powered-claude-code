@@ -16,18 +16,94 @@ This project allows you to use Z.AI's GLM models (including GLM-4.6) with Claude
 
 1. **Claude Code** installed on your system
 2. **jq** command-line JSON processor (required for parsing configuration)
+   - Ubuntu/Debian: `sudo apt-get install jq`
+   - macOS: `brew install jq`
+   - Windows: `choco install jq` or `scoop install jq`
 3. **Z.AI API key** and account
-4. A **configuration file** at `~/.zai.json` with your Z.AI credentials
+
+## Quick Start
+
+The easiest way to get started is to use the automated installation script:
+
+### Linux/macOS
+```bash
+bash scripts/install.sh
+```
+
+### Windows (PowerShell)
+```powershell
+.\scripts\install.ps1
+```
+
+### Windows (CMD)
+```cmd
+scripts\install.bat
+```
+
+The installer will:
+- Copy wrapper scripts to `~/.local/bin` (or `%USERPROFILE%\.local\bin` on Windows)
+- Optionally add the directory to your PATH
+- Optionally install Claude status line configuration
+- Guide you through first-time configuration
+
+After installation, simply run `z` to start the interactive configuration wizard.
+
+## Configuration
+
+### Environment Variables
+
+The wrapper supports the following environment variables for enhanced security and flexibility:
+
+- **`ZAI_API_KEY`**: Your Z.AI API key (highest priority, overrides config file)
+- **`ZAI_CONFIG_PATH`**: Custom path to your configuration file
+- **`XDG_CONFIG_HOME`**: XDG Base Directory for config files (Linux/macOS only)
+
+#### Setting Environment Variables
+
+**Linux/macOS (bash/zsh):**
+```bash
+export ZAI_API_KEY="your-api-key-here"
+# Add to ~/.bashrc or ~/.zshrc to make permanent
+```
+
+**Windows (PowerShell):**
+```powershell
+# Temporary (current session only)
+$env:ZAI_API_KEY = "your-api-key-here"
+
+# Permanent (user-level)
+[Environment]::SetEnvironmentVariable('ZAI_API_KEY', 'your-api-key-here', 'User')
+```
+
+**Windows (CMD):**
+```cmd
+rem Temporary (current session only)
+set ZAI_API_KEY=your-api-key-here
+
+rem Permanent (user-level)
+setx ZAI_API_KEY "your-api-key-here"
+```
+
+### Configuration Files
+
+The wrapper looks for configuration files in the following order (first found wins):
+
+#### Linux/macOS
+1. `./.zai.json` (per-project config, merged with global)
+2. `$ZAI_CONFIG_PATH` (if set)
+3. `$XDG_CONFIG_HOME/zai/config.json` (if XDG_CONFIG_HOME is set)
+4. `~/.config/zai/config.json` (XDG default)
+5. `~/.zai.json` (legacy location, backward compatible)
+
+#### Windows
+1. `.\.zai.json` (per-project config, merged with global)
+2. `%ZAI_CONFIG_PATH%` (if set)
+3. `%APPDATA%\zai\config.json`
+4. `%USERPROFILE%\.zai.json` (legacy location, backward compatible)
 
 ### Configuration File Format
 
-Copy the example `.zai.json` file from the project root to your home directory and update it with your credentials:
-
-```bash
-cp .zai.json ~/.zai.json
-```
-
-Then edit `~/.zai.json` and replace the placeholder values with your actual Z.AI API key:
+Configuration files use JSON format:
 
 ```json
 {
@@ -44,11 +120,9 @@ Then edit `~/.zai.json` and replace the placeholder values with your actual Z.AI
 }
 ```
 
-Replace `"your-api-key"` with your actual Z.AI API key. You can also modify the model names if you prefer different Z.AI models.
+### Configuration Options
 
-#### Configuration Options
-
-- **apiKey**: Your Z.AI API key (required)
+- **apiKey**: Your Z.AI API key (can be omitted if using `ZAI_API_KEY` environment variable)
 - **opusModel**: Model to use for opus tier requests (default: "glm-4.6")
 - **sonnetModel**: Model to use for sonnet tier requests (default: "glm-4.5")
 - **haikuModel**: Model to use for haiku tier requests (default: "glm-4.5-air")
@@ -59,86 +133,140 @@ Replace `"your-api-key"` with your actual Z.AI API key. You can also modify the 
 - **maxThinkingTokens**: Maximum tokens for thinking (default: "")
 - **maxOutputTokens**: Maximum tokens for output (default: "")
 
-## Installation
+### Per-Project Configuration
 
-### Step 1: Install Wrapper Scripts
+You can create a `.zai.json` file in your project directory to override global settings:
 
-Copy the appropriate wrapper script(s) from the `bin/` directory to a location that's in your PATH.
+```json
+{
+  "defaultModel": "sonnet",
+  "reasoningEffort": "medium"
+}
+```
 
-#### Option 1: ~/.local/bin (Recommended for cross-platform)
+**Important:** Add `.zai.json` to your `.gitignore` if it contains your API key:
+```gitignore
+# Z.AI configuration (may contain API key)
+.zai.json
+```
+
+### Configuration Priority
+
+Settings are resolved in this order (highest priority first):
+
+1. **API Key**: `ZAI_API_KEY` environment variable > config file `apiKey`
+2. **Config Files**: Per-project `.zai.json` > global config file
+3. **Config Locations**: Custom path > XDG/AppData > legacy home directory
+
+### First-Time Setup
+
+When you run `z` for the first time without a configuration file, an interactive setup wizard will guide you through:
+
+1. Entering your Z.AI API key
+2. Choosing where to store the configuration (user home or project directory)
+3. Choosing how to store your API key (config file or environment variable)
+4. Automatically setting up environment variables (if chosen)
+
+The wizard creates a configuration file with secure permissions (chmod 600 on Unix systems).
+
+## Manual Installation
+
+If you prefer to install manually instead of using the automated installer:
+
+### Linux/macOS
 
 ```bash
-# Create the directory if it doesn't exist
+# Create directory
 mkdir -p ~/.local/bin
 
-# Copy the scripts
-# For Linux/macOS:
+# Copy wrapper script
 cp bin/z ~/.local/bin/
+chmod +x ~/.local/bin/z
 
-# For Windows:
-copy bin\z.cmd %USERPROFILE%\.local\bin\
-copy bin\z.ps1 %USERPROFILE%\.local\bin\
-copy bin\z %USERPROFILE%\.local\bin\
-
-# Add ~/.local/bin to your PATH if not already present
-# Add this to your shell profile (~/.bashrc, ~/.zshrc, etc.)
+# Add to PATH (add to ~/.bashrc or ~/.zshrc)
 export PATH="$HOME/.local/bin:$PATH"
-```
 
-#### Option 2: System-wide installation
-
-```bash
-# For Linux/macOS
-sudo cp bin/z /usr/local/bin/
-
-# For Windows (run as Administrator)
-copy bin\z.cmd C:\Windows\System32\
-copy bin\z.ps1 C:\Windows\System32\
-```
-
-### Step 2: Install Status Line Configuration
-
-1. Copy the status line script to your Claude configuration directory:
-
-```bash
-# For Linux/macOS
+# Optional: Install status line
 mkdir -p ~/.claude
 cp claude/statusLine.sh ~/.claude/
+chmod +x ~/.claude/statusLine.sh
+cp claude/settings.json ~/.claude/  # or merge with existing
+```
 
-# For Windows
+### Windows (PowerShell)
+
+```powershell
+# Create directory
+New-Item -ItemType Directory -Path "$env:USERPROFILE\.local\bin" -Force
+
+# Copy wrapper scripts
+Copy-Item bin\z.cmd "$env:USERPROFILE\.local\bin\"
+Copy-Item bin\z.ps1 "$env:USERPROFILE\.local\bin\"
+
+# Add to PATH
+$path = [Environment]::GetEnvironmentVariable("Path", "User")
+[Environment]::SetEnvironmentVariable("Path", "$path;$env:USERPROFILE\.local\bin", "User")
+
+# Optional: Install status line
+New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude" -Force
+Copy-Item claude\statusLine.sh "$env:USERPROFILE\.claude\"
+Copy-Item claude\settings.json "$env:USERPROFILE\.claude\"
+```
+
+### Windows (CMD)
+
+```cmd
+rem Create directory
+mkdir %USERPROFILE%\.local\bin
+
+rem Copy wrapper scripts
+copy bin\z.cmd %USERPROFILE%\.local\bin\
+copy bin\z.ps1 %USERPROFILE%\.local\bin\
+
+rem Add to PATH
+setx PATH "%PATH%;%USERPROFILE%\.local\bin"
+
+rem Optional: Install status line
 mkdir %USERPROFILE%\.claude
 copy claude\statusLine.sh %USERPROFILE%\.claude\
+copy claude\settings.json %USERPROFILE%\.claude\
 ```
 
-2. Merge the settings.json with your existing Claude settings:
+## Uninstallation
 
+To remove the Z.AI wrapper:
+
+### Linux/macOS
 ```bash
-# If ~/.claude/settings.json doesn't exist, just copy it
-cp claude/settings.json ~/.claude/
-
-# If it already exists, merge the statusLine configuration
-# You can use jq to merge the files:
-jq -s '.[0] * .[1]' ~/.claude/settings.json claude/settings.json > ~/.claude/settings.json.tmp && mv ~/.claude/settings.json.tmp ~/.claude/settings.json
+bash scripts/uninstall.sh
 ```
 
-### Step 3: Verify Installation
-
-1. Ensure the scripts are executable (Linux/macOS):
-```bash
-chmod +x ~/.local/bin/z ~/.claude/statusLine.sh
+### Windows (PowerShell)
+```powershell
+.\scripts\uninstall.ps1
 ```
 
-2. Test the installation:
-```bash
-z --help
+### Windows (CMD)
+```cmd
+scripts\uninstall.bat
 ```
+
+The uninstaller will prompt you to:
+- Remove wrapper scripts
+- Remove Claude status line configuration
+- Clean up PATH entries (Linux/macOS only - Windows requires manual cleanup)
+- Remove configuration files
+- Remove environment variables
 
 ## Usage
 
-Once installed, simply use the `z` command instead of `claude`:
+Once installed, use the `z` command instead of `claude`:
 
 ```bash
-# Start a new session with the default model (opus)
+# First run - interactive configuration wizard
+z
+
+# Start a new session with the default model
 z
 
 # Use a specific model
@@ -147,31 +275,39 @@ z --model haiku
 
 # Pass any other claude arguments
 z --model opus "Help me write a Python script"
+z --help
 ```
 
-### Default Model Configuration
+### Using Different Models
 
-You can set a default model in your `~/.zai.json` configuration file using the `defaultModel` field. When set, the wrapper scripts will automatically use this model unless you explicitly specify a different model with `--model`.
+The wrapper maps Claude model tiers to Z.AI models:
 
-For example, to use `glm-4.5` as your default model:
+- **opus** → `glm-4.6` (configurable via `opusModel`)
+- **sonnet** → `glm-4.5` (configurable via `sonnetModel`)
+- **haiku** → `glm-4.5-air` (configurable via `haikuModel`)
+
+Set a default model in your configuration:
 ```json
 {
-  "defaultModel": "glm-4.5",
-  "apiKey": "your-api-key"
+  "defaultModel": "sonnet"
 }
 ```
 
 ### AI Thinking Capabilities
 
-The wrapper supports AI thinking capabilities through environment variables configured in `~/.zai.json`:
+Configure AI thinking through your configuration file:
 
-- **ENABLE_THINKING**: Enable/disable thinking mode (default: "true")
-- **ENABLE_STREAMING**: Enable streaming responses (default: "true")
-- **REASONING_EFFORT**: Set reasoning effort level - "auto", "low", "medium", "high", or "max" (default: "high")
-- **MAX_THINKING_TOKENS**: Maximum tokens allocated for thinking (default: "")
-- **MAX_OUTPUT_TOKENS**: Maximum tokens for the output (default: "")
+```json
+{
+  "enableThinking": "true",
+  "enableStreaming": "true",
+  "reasoningEffort": "high",
+  "maxThinkingTokens": "",
+  "maxOutputTokens": ""
+}
+```
 
-Note: These thinking-related environment variables are experimental and their effectiveness depends on whether the Z.AI API supports these features.
+**Note:** These features are experimental and depend on Z.AI API support.
 
 ## Status Line Features
 
@@ -198,20 +334,56 @@ The status line displays:
 
 ## Troubleshooting
 
-### "Configuration file not found" error
-- Ensure `~/.zai.json` exists with the correct format
-- Check that the file is readable by your user account
+### Configuration Issues
 
-### "jq not found" error
+**"Valid API key not found" error:**
+- Set the `ZAI_API_KEY` environment variable, or
+- Ensure your config file contains a valid `apiKey` (not "your-api-key")
+- Check config file locations (see Configuration section)
+
+**"Configuration file not found" error:**
+- Run `z` to start the interactive configuration wizard
+- Or manually create a config file in one of the supported locations
+
+**Permission warnings (Unix):**
+- The wrapper warns if config files have overly permissive permissions
+- Fix with: `chmod 600 ~/.config/zai/config.json`
+
+### Installation Issues
+
+**"jq not found" error:**
 - Install `jq` using your system package manager:
   - Ubuntu/Debian: `sudo apt-get install jq`
   - macOS: `brew install jq`
-  - Windows: `choco install jq` or download from jq website
+  - Windows: `choco install jq` or `scoop install jq`
 
-### Status line not showing
-- Verify that `~/.claude/settings.json` contains the statusLine configuration
-- Ensure the `statusLine.sh` script is executable (Linux/macOS)
-- Check that the script path in settings.json is correct
+**Command not found: z**
+- Ensure `~/.local/bin` is in your PATH
+- Restart your terminal after installation
+- Check installation with: `which z` (Unix) or `where z` (Windows)
+
+### Status Line Issues
+
+**Status line not showing:**
+- Verify `~/.claude/settings.json` contains the statusLine configuration
+- Ensure `statusLine.sh` is executable: `chmod +x ~/.claude/statusLine.sh`
+- Check the script path in settings.json matches your installation
+- On Windows, ensure Git Bash or WSL is available
+
+### Per-Project Configuration
+
+**Project config not being used:**
+- Ensure `.zai.json` is in the current working directory
+- Check file permissions (must be readable)
+- Project config merges with (doesn't replace) global config
+
+### Environment Variables
+
+**Environment variable not persisting:**
+- Use `setx` on Windows CMD (not `set`)
+- Use `[Environment]::SetEnvironmentVariable()` in PowerShell
+- Add `export` to shell profile on Linux/macOS (~/.bashrc, ~/.zshrc)
+- Restart terminal after setting environment variables
 
 ## License
 
@@ -220,6 +392,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Additional Documentation
+
+- **[INSTALL.md](INSTALL.md)**: Comprehensive installation guide with troubleshooting
+- **[CONFIGURATION.md](CONFIGURATION.md)**: Detailed configuration reference and examples
+- **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)**: Technical implementation details
+
+## Security Best Practices
+
+1. **Use environment variables for API keys** instead of storing in config files
+2. **Add `.zai.json` to `.gitignore`** in your projects
+3. **Set restrictive permissions** on config files (chmod 600 on Unix)
+4. **Never commit API keys** to version control
+5. **Use per-project configs** without API keys, relying on global config or env vars
 
 ## Support
 
