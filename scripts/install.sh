@@ -63,18 +63,31 @@ fi
 echo -e "${BLUE}Creating installation directory...${NC}"
 mkdir -p "$INSTALL_DIR"
 
+# Detect platform
+IS_WINDOWS=false
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+    IS_WINDOWS=true
+elif [[ -n "$WINDIR" || -n "$SYSTEMROOT" ]]; then
+    # Additional check for Windows environment
+    IS_WINDOWS=true
+fi
+
 # Copy wrapper scripts
 echo -e "${BLUE}Installing wrapper scripts...${NC}"
 cp bin/z "$INSTALL_DIR/z"
-cp bin/z.cmd "$INSTALL_DIR/z.cmd"
-cp bin/z.ps1 "$INSTALL_DIR/z.ps1"
-
-# Make scripts executable
 chmod +x "$INSTALL_DIR/z"
-chmod +x "$INSTALL_DIR/z.cmd"
-chmod +x "$INSTALL_DIR/z.ps1"
 
-echo -e "${GREEN}✓ Wrapper scripts installed to $INSTALL_DIR${NC}"
+if [ "$IS_WINDOWS" = true ]; then
+    # On Windows (Git Bash/MSYS/Cygwin), also install Windows-specific scripts
+    cp bin/z.cmd "$INSTALL_DIR/z.cmd"
+    cp bin/z.ps1 "$INSTALL_DIR/z.ps1"
+    chmod +x "$INSTALL_DIR/z.cmd"
+    chmod +x "$INSTALL_DIR/z.ps1"
+    echo -e "${GREEN}✓ Wrapper scripts installed to $INSTALL_DIR (including Windows scripts)${NC}"
+else
+    # On Unix/Linux/macOS, only install the bash script
+    echo -e "${GREEN}✓ Wrapper script installed to $INSTALL_DIR${NC}"
+fi
 
 # Check if INSTALL_DIR is in PATH
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
