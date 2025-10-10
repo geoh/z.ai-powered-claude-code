@@ -24,6 +24,25 @@ if [ ! -f "bin/z" ] || [ ! -f "bin/z.cmd" ] || [ ! -f "bin/z.ps1" ]; then
     exit 1
 fi
 
+# Check for existing installation
+if [ -f "$INSTALL_DIR/z" ]; then
+    echo -e "${YELLOW}Existing installation detected at $INSTALL_DIR${NC}"
+    echo ""
+    echo "Options:"
+    echo "  1) Reinstall/Upgrade (recommended - overwrites existing files)"
+    echo "  2) Cancel installation"
+    echo ""
+    read -p "Choose [1-2]: " install_choice
+
+    if [ "$install_choice" != "1" ]; then
+        echo "Installation cancelled."
+        exit 0
+    fi
+    echo ""
+    echo -e "${BLUE}Proceeding with reinstallation/upgrade...${NC}"
+    echo ""
+fi
+
 # Check for jq dependency
 if ! command -v jq &> /dev/null; then
     echo -e "${YELLOW}Warning: 'jq' is not installed.${NC}"

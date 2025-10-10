@@ -87,14 +87,20 @@ function New-ConfigFile {
 
     # If user chose environment variable, help them set it up
     if ($keyChoice -eq "2") {
+        # Set in current session immediately
+        $env:ZAI_API_KEY = $apiKey
         Write-Host ""
-        Write-Host "To set the ZAI_API_KEY environment variable permanently, run:"
+        Write-Host "✓ ZAI_API_KEY set for current session"
+        Write-Host ""
+        Write-Host "To make this permanent, run:"
         Write-Host "  [Environment]::SetEnvironmentVariable('ZAI_API_KEY', '$apiKey', 'User')"
         Write-Host ""
-        $addEnv = Read-Host "Would you like me to set it now? [y/N]"
+        $addEnv = Read-Host "Would you like me to set it permanently now? [y/N]"
         if ($addEnv -eq "y" -or $addEnv -eq "Y") {
             [Environment]::SetEnvironmentVariable('ZAI_API_KEY', $apiKey, 'User')
-            Write-Host "Environment variable set. Please restart your terminal."
+            Write-Host "Environment variable set permanently. Will persist in new terminal sessions."
+        } else {
+            Write-Host "Note: You'll need to set ZAI_API_KEY manually in new terminal sessions."
         }
     }
 

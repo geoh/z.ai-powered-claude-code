@@ -32,6 +32,25 @@ if (-not (Test-Path "bin\z") -or -not (Test-Path "bin\z.cmd") -or -not (Test-Pat
     exit 1
 }
 
+# Check for existing installation
+if (Test-Path "$InstallDir\z.cmd") {
+    Write-ColorOutput "Existing installation detected at $InstallDir" "Yellow"
+    Write-Host ""
+    Write-Host "Options:"
+    Write-Host "  1) Reinstall/Upgrade (recommended - overwrites existing files)"
+    Write-Host "  2) Cancel installation"
+    Write-Host ""
+    $installChoice = Read-Host "Choose [1-2]"
+
+    if ($installChoice -ne "1") {
+        Write-Host "Installation cancelled."
+        exit 0
+    }
+    Write-Host ""
+    Write-ColorOutput "Proceeding with reinstallation/upgrade..." "Blue"
+    Write-Host ""
+}
+
 # Check for jq dependency
 $jqInstalled = $null -ne (Get-Command jq -ErrorAction SilentlyContinue)
 if (-not $jqInstalled) {

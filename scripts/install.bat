@@ -26,6 +26,26 @@ if not exist "bin\z.ps1" (
     exit /b 1
 )
 
+rem Check for existing installation
+if exist "%INSTALL_DIR%\z.cmd" (
+    echo.
+    echo Existing installation detected at %INSTALL_DIR%
+    echo.
+    echo Options:
+    echo   1^) Reinstall/Upgrade ^(recommended - overwrites existing files^)
+    echo   2^) Cancel installation
+    echo.
+    set /p INSTALL_CHOICE="Choose [1-2]: "
+
+    if not "!INSTALL_CHOICE!"=="1" (
+        echo Installation cancelled.
+        exit /b 0
+    )
+    echo.
+    echo Proceeding with reinstallation/upgrade...
+    echo.
+)
+
 rem Check for jq dependency
 where jq >nul 2>&1
 if errorlevel 1 (

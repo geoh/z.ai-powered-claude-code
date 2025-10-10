@@ -89,14 +89,20 @@ echo.
 echo Configuration file created at: !CONFIG_FILE!
 
 if "!KEY_CHOICE!"=="2" (
+    rem Set in current session immediately
+    set ZAI_API_KEY=!API_KEY_INPUT!
     echo.
-    echo To set the ZAI_API_KEY environment variable permanently, run:
+    echo [OK] ZAI_API_KEY set for current session
+    echo.
+    echo To make this permanent, run:
     echo   setx ZAI_API_KEY "!API_KEY_INPUT!"
     echo.
-    set /p ADD_ENV="Would you like me to set it now? [y/N]: "
+    set /p ADD_ENV="Would you like me to set it permanently now? [y/N]: "
     if /i "!ADD_ENV!"=="y" (
         setx ZAI_API_KEY "!API_KEY_INPUT!" >nul
-        echo Environment variable set. Please restart your terminal.
+        echo Environment variable set permanently. Will persist in new terminal sessions.
+    ) else (
+        echo Note: You'll need to set ZAI_API_KEY manually in new terminal sessions.
     )
 )
 

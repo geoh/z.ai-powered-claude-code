@@ -119,8 +119,12 @@ EOF
 
     # If user chose environment variable, help them set it up
     if [ "$key_choice" = "2" ]; then
+        # Set in current session immediately
+        export ZAI_API_KEY="$api_key"
         echo
-        echo "To set the ZAI_API_KEY environment variable, add this to your shell profile:"
+        echo "✓ ZAI_API_KEY set for current session"
+        echo
+        echo "To make this permanent, add this to your shell profile:"
         echo "  export ZAI_API_KEY=\"$api_key\""
         echo
         echo "For bash, add to ~/.bashrc or ~/.bash_profile"
@@ -141,7 +145,9 @@ EOF
                     echo "Added to ~/.bash_profile"
                 fi
             fi
-            echo "Please restart your terminal or source your profile for changes to take effect."
+            echo "Environment variable will persist in new terminal sessions."
+        else
+            echo "Note: You'll need to set ZAI_API_KEY manually in new terminal sessions."
         fi
     fi
 
