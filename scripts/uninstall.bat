@@ -17,14 +17,17 @@ set FILES_FOUND=0
 if exist "%INSTALL_DIR%\z" set FILES_FOUND=1
 if exist "%INSTALL_DIR%\z.cmd" set FILES_FOUND=1
 if exist "%INSTALL_DIR%\z.ps1" set FILES_FOUND=1
+if exist "%INSTALL_DIR%\glm" set FILES_FOUND=1
+if exist "%INSTALL_DIR%\glm.cmd" set FILES_FOUND=1
+if exist "%INSTALL_DIR%\glm.ps1" set FILES_FOUND=1
 
 if %FILES_FOUND%==0 (
     echo No Z.AI wrapper scripts found in %INSTALL_DIR%
 ) else (
     echo Found Z.AI wrapper scripts in %INSTALL_DIR%
     echo.
-    set /p REMOVE_SCRIPTS="Remove wrapper scripts? [y/N]: "
-    
+    set /p REMOVE_SCRIPTS="Remove wrapper scripts (including glm shims)? [y/N]: "
+
     if /i "!REMOVE_SCRIPTS!"=="y" (
         if exist "%INSTALL_DIR%\z" (
             del "%INSTALL_DIR%\z"
@@ -48,6 +51,30 @@ if %FILES_FOUND%==0 (
                 echo Error: Failed to remove %INSTALL_DIR%\z.ps1
             ) else (
                 echo [OK] Removed %INSTALL_DIR%\z.ps1
+            )
+        )
+        if exist "%INSTALL_DIR%\glm" (
+            del "%INSTALL_DIR%\glm"
+            if errorlevel 1 (
+                echo Error: Failed to remove %INSTALL_DIR%\glm
+            ) else (
+                echo [OK] Removed %INSTALL_DIR%\glm
+            )
+        )
+        if exist "%INSTALL_DIR%\glm.cmd" (
+            del "%INSTALL_DIR%\glm.cmd"
+            if errorlevel 1 (
+                echo Error: Failed to remove %INSTALL_DIR%\glm.cmd
+            ) else (
+                echo [OK] Removed %INSTALL_DIR%\glm.cmd
+            )
+        )
+        if exist "%INSTALL_DIR%\glm.ps1" (
+            del "%INSTALL_DIR%\glm.ps1"
+            if errorlevel 1 (
+                echo Error: Failed to remove %INSTALL_DIR%\glm.ps1
+            ) else (
+                echo [OK] Removed %INSTALL_DIR%\glm.ps1
             )
         )
     ) else (

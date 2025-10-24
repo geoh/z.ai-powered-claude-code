@@ -21,19 +21,25 @@ FILES_FOUND=0
 [ -f "$INSTALL_DIR/z" ] && FILES_FOUND=1
 [ -f "$INSTALL_DIR/z.cmd" ] && FILES_FOUND=1
 [ -f "$INSTALL_DIR/z.ps1" ] && FILES_FOUND=1
+[ -f "$INSTALL_DIR/glm" ] && FILES_FOUND=1
+[ -f "$INSTALL_DIR/glm.cmd" ] && FILES_FOUND=1
+[ -f "$INSTALL_DIR/glm.ps1" ] && FILES_FOUND=1
 
 if [ $FILES_FOUND -eq 0 ]; then
     echo -e "${YELLOW}No Z.AI wrapper scripts found in $INSTALL_DIR${NC}"
 else
     echo -e "${BLUE}Found Z.AI wrapper scripts in $INSTALL_DIR${NC}"
     echo ""
-    read -p "Remove wrapper scripts? [y/N]: " remove_scripts
+    read -p "Remove wrapper scripts (including glm shims)? [y/N]: " remove_scripts
 
     if [ "$remove_scripts" = "y" ] || [ "$remove_scripts" = "Y" ]; then
         # Remove all scripts if they exist (for backward compatibility with older installations)
         [ -f "$INSTALL_DIR/z" ] && rm "$INSTALL_DIR/z" && echo -e "${GREEN}✓ Removed $INSTALL_DIR/z${NC}"
         [ -f "$INSTALL_DIR/z.cmd" ] && rm "$INSTALL_DIR/z.cmd" && echo -e "${GREEN}✓ Removed $INSTALL_DIR/z.cmd${NC}"
         [ -f "$INSTALL_DIR/z.ps1" ] && rm "$INSTALL_DIR/z.ps1" && echo -e "${GREEN}✓ Removed $INSTALL_DIR/z.ps1${NC}"
+        [ -f "$INSTALL_DIR/glm" ] && rm "$INSTALL_DIR/glm" && echo -e "${GREEN}✓ Removed $INSTALL_DIR/glm${NC}"
+        [ -f "$INSTALL_DIR/glm.cmd" ] && rm "$INSTALL_DIR/glm.cmd" && echo -e "${GREEN}✓ Removed $INSTALL_DIR/glm.cmd${NC}"
+        [ -f "$INSTALL_DIR/glm.ps1" ] && rm "$INSTALL_DIR/glm.ps1" && echo -e "${GREEN}✓ Removed $INSTALL_DIR/glm.ps1${NC}"
     else
         echo -e "${YELLOW}Skipped removing wrapper scripts${NC}"
     fi

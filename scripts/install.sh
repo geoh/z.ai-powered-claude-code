@@ -24,6 +24,11 @@ if [ ! -f "bin/z" ] || [ ! -f "bin/z.cmd" ] || [ ! -f "bin/z.ps1" ]; then
     exit 1
 fi
 
+if [ ! -f "bin/glm" ] || [ ! -f "bin/glm.cmd" ] || [ ! -f "bin/glm.ps1" ]; then
+    echo -e "${RED}Error: Please run this script from the project root directory.${NC}"
+    exit 1
+fi
+
 # Check for existing installation
 if [ -f "$INSTALL_DIR/z" ]; then
     echo -e "${YELLOW}Existing installation detected at $INSTALL_DIR${NC}"
@@ -76,17 +81,23 @@ fi
 echo -e "${BLUE}Installing wrapper scripts...${NC}"
 cp bin/z "$INSTALL_DIR/z"
 chmod +x "$INSTALL_DIR/z"
+cp bin/glm "$INSTALL_DIR/glm"
+chmod +x "$INSTALL_DIR/glm"
 
 if [ "$IS_WINDOWS" = true ]; then
     # On Windows (Git Bash/MSYS/Cygwin), also install Windows-specific scripts
     cp bin/z.cmd "$INSTALL_DIR/z.cmd"
     cp bin/z.ps1 "$INSTALL_DIR/z.ps1"
+    cp bin/glm.cmd "$INSTALL_DIR/glm.cmd"
+    cp bin/glm.ps1 "$INSTALL_DIR/glm.ps1"
     chmod +x "$INSTALL_DIR/z.cmd"
     chmod +x "$INSTALL_DIR/z.ps1"
-    echo -e "${GREEN}✓ Wrapper scripts installed to $INSTALL_DIR (including Windows scripts)${NC}"
+    chmod +x "$INSTALL_DIR/glm.cmd"
+    chmod +x "$INSTALL_DIR/glm.ps1"
+    echo -e "${GREEN}✓ Wrapper scripts installed to $INSTALL_DIR (including Windows scripts and glm shims)${NC}"
 else
     # On Unix/Linux/macOS, only install the bash script
-    echo -e "${GREEN}✓ Wrapper script installed to $INSTALL_DIR${NC}"
+    echo -e "${GREEN}✓ Wrapper scripts installed to $INSTALL_DIR (including glm shim)${NC}"
 fi
 
 # Check if INSTALL_DIR is in PATH
@@ -215,8 +226,10 @@ echo -e "${GREEN}╚════════════════════
 echo ""
 echo "Next steps:"
 echo "  1. Restart your terminal (or source your shell profile)"
-echo "  2. Run 'z' to configure your Z.AI API key (first-time setup)"
-echo "  3. Use 'z' instead of 'claude' to launch Claude Code with Z.AI"
+echo "  2. Run 'z' (or 'glm') to configure your Z.AI API key (first-time setup)"
+echo "  3. Use 'z' or 'glm' instead of 'claude' to launch Claude Code with Z.AI"
+echo ""
+echo "Note: Both 'z' and 'glm' commands are available (glm represents the GLM model family)"
 echo ""
 echo "For more information, see README.md"
 echo ""

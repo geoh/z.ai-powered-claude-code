@@ -2,6 +2,8 @@
 
 This guide provides detailed information about configuring the Z.AI CLI wrapper.
 
+**Note:** The wrapper can be invoked using either `z` or `glm` commands - they work identically. The `glm` command is an alternative naming convention representing the GLM model family.
+
 ## Table of Contents
 
 - [Configuration Methods](#configuration-methods)

@@ -25,6 +25,18 @@ if not exist "bin\z.ps1" (
     echo Error: Please run this script from the project root directory.
     exit /b 1
 )
+if not exist "bin\glm" (
+    echo Error: Please run this script from the project root directory.
+    exit /b 1
+)
+if not exist "bin\glm.cmd" (
+    echo Error: Please run this script from the project root directory.
+    exit /b 1
+)
+if not exist "bin\glm.ps1" (
+    echo Error: Please run this script from the project root directory.
+    exit /b 1
+)
 
 rem Check for existing installation
 if exist "%INSTALL_DIR%\z.cmd" (
@@ -82,8 +94,23 @@ if errorlevel 1 (
     echo Error: Failed to copy bin\z.ps1
     exit /b 1
 )
+copy /Y "bin\glm" "%INSTALL_DIR%\glm" >nul
+if errorlevel 1 (
+    echo Error: Failed to copy bin\glm
+    exit /b 1
+)
+copy /Y "bin\glm.cmd" "%INSTALL_DIR%\glm.cmd" >nul
+if errorlevel 1 (
+    echo Error: Failed to copy bin\glm.cmd
+    exit /b 1
+)
+copy /Y "bin\glm.ps1" "%INSTALL_DIR%\glm.ps1" >nul
+if errorlevel 1 (
+    echo Error: Failed to copy bin\glm.ps1
+    exit /b 1
+)
 
-echo [OK] Wrapper scripts installed to %INSTALL_DIR%
+echo [OK] Wrapper scripts installed to %INSTALL_DIR% (including glm shims)
 
 rem Check if INSTALL_DIR is in PATH
 echo %PATH% | find /i "%INSTALL_DIR%" >nul
@@ -181,8 +208,10 @@ echo ===============================================================
 echo.
 echo Next steps:
 echo   1. Restart your terminal ^(CMD, PowerShell, or Git Bash^)
-echo   2. Run 'z' to configure your Z.AI API key ^(first-time setup^)
-echo   3. Use 'z' instead of 'claude' to launch Claude Code with Z.AI
+echo   2. Run 'z' ^(or 'glm'^) to configure your Z.AI API key ^(first-time setup^)
+echo   3. Use 'z' or 'glm' instead of 'claude' to launch Claude Code with Z.AI
+echo.
+echo Note: Both 'z' and 'glm' commands are available ^(glm represents the GLM model family^)
 echo.
 echo For more information, see README.md
 echo.

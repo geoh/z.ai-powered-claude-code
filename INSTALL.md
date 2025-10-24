@@ -90,7 +90,7 @@ bash scripts/install.sh
 The installer will:
 - Detect and offer to upgrade existing installations
 - Check for jq dependency
-- Copy wrapper scripts to `~/.local/bin`
+- Copy wrapper scripts (including `glm` shims) to `~/.local/bin`
 - Make scripts executable
 - Detect your shell profiles (.bashrc, .zshrc, .bash_profile, .profile)
 - Optionally add `~/.local/bin` to PATH
@@ -110,7 +110,7 @@ The installer will:
 The installer will:
 - Detect and offer to upgrade existing installations
 - Check for jq dependency
-- Copy wrapper scripts to `%USERPROFILE%\.local\bin`
+- Copy wrapper scripts (including `glm` shims) to `%USERPROFILE%\.local\bin`
 - Optionally add to user PATH using `[Environment]::SetEnvironmentVariable`
 - Optionally install Claude status line configuration
 
@@ -128,7 +128,7 @@ scripts\install.bat
 The installer will:
 - Detect and offer to upgrade existing installations
 - Check for jq dependency
-- Copy wrapper scripts to `%USERPROFILE%\.local\bin`
+- Copy wrapper scripts (including `glm` shims) to `%USERPROFILE%\.local\bin`
 - Optionally add to PATH using `setx` command
 - Optionally install Claude status line configuration
 
@@ -303,6 +303,8 @@ jq --version
 
 ```bash
 z
+# or
+glm
 ```
 
 This should launch the interactive configuration wizard if no config file exists.
@@ -314,10 +316,14 @@ This should launch the interactive configuration wizard if no config file exists
 - You can start using Z.AI right away without restarting your terminal
 - The wizard will optionally add the environment variable to your shell profile for persistence
 
+**Note:** Both `z` and `glm` commands work identically. The `glm` command is an alternative naming convention representing the GLM model family.
+
 ### 4. Test with Help Command
 
 ```bash
 z --help
+# or
+glm --help
 ```
 
 This should display Claude Code's help information.
@@ -326,7 +332,7 @@ This should display Claude Code's help information.
 
 ### Command Not Found
 
-**Problem:** `z: command not found` or `'z' is not recognized`
+**Problem:** `z: command not found` or `glm: command not found` or `'z' is not recognized` or `'glm' is not recognized`
 
 **Solutions:**
 1. Verify installation directory exists and contains the scripts
@@ -374,7 +380,7 @@ Install jq using your package manager (see [Installing jq](#installing-jq))
 1. Verify `~/.claude/settings.json` exists and contains statusLine configuration
 2. Check that `statusLine.sh` is executable: `chmod +x ~/.claude/statusLine.sh`
 3. Ensure bash is installed and in your PATH (on Windows, install Git for Windows)
-4. **Windows users:** The status line **only works when running from Git Bash** (`z`). It does **not** work with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations when Claude Code invokes external commands. Use Git Bash for the full experience
+4. **Windows users:** The status line **only works when running from Git Bash** (`z` or `glm`). It does **not** work with CMD or PowerShell due to stdin piping limitations when Claude Code invokes external commands. Use Git Bash for the full experience
 5. On Unix/Linux/macOS, ensure the script path in settings.json is correct
 
 ### Installation Script Fails
@@ -394,10 +400,12 @@ Install jq using your package manager (see [Installing jq](#installing-jq))
 
 After successful installation:
 
-1. **Configure your API key**: Run `z` to start the configuration wizard
+1. **Configure your API key**: Run `z` (or `glm`) to start the configuration wizard
 2. **Read the configuration guide**: See [CONFIGURATION.md](CONFIGURATION.md)
-3. **Test the wrapper**: Try `z --help` or start a session with `z`
+3. **Test the wrapper**: Try `z --help` or `glm --help`, or start a session with `z` or `glm`
 4. **Set up per-project configs**: Create `.zai.json` in your projects as needed
+
+**Note:** Both `z` and `glm` commands are available and work identically.
 
 ## Uninstallation
 

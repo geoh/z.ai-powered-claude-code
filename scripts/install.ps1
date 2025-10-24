@@ -32,6 +32,11 @@ if (-not (Test-Path "bin\z") -or -not (Test-Path "bin\z.cmd") -or -not (Test-Pat
     exit 1
 }
 
+if (-not (Test-Path "bin\glm") -or -not (Test-Path "bin\glm.cmd") -or -not (Test-Path "bin\glm.ps1")) {
+    Write-ColorOutput "Error: Please run this script from the project root directory." "Red"
+    exit 1
+}
+
 # Check for existing installation
 if (Test-Path "$InstallDir\z.cmd") {
     Write-ColorOutput "Existing installation detected at $InstallDir" "Yellow"
@@ -79,8 +84,11 @@ Write-ColorOutput "Installing wrapper scripts..." "Blue"
 Copy-Item "bin\z" -Destination "$InstallDir\z" -Force
 Copy-Item "bin\z.cmd" -Destination "$InstallDir\z.cmd" -Force
 Copy-Item "bin\z.ps1" -Destination "$InstallDir\z.ps1" -Force
+Copy-Item "bin\glm" -Destination "$InstallDir\glm" -Force
+Copy-Item "bin\glm.cmd" -Destination "$InstallDir\glm.cmd" -Force
+Copy-Item "bin\glm.ps1" -Destination "$InstallDir\glm.ps1" -Force
 
-Write-ColorOutput "✓ Wrapper scripts installed to $InstallDir" "Green"
+Write-ColorOutput "✓ Wrapper scripts installed to $InstallDir (including glm shims)" "Green"
 
 # Check if InstallDir is in PATH
 $currentPath = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -201,8 +209,10 @@ Write-Host ""
 Write-Header "Installation Complete!"
 Write-Host "Next steps:"
 Write-Host "  1. Restart your terminal (PowerShell, CMD, or Git Bash)"
-Write-Host "  2. Run 'z' to configure your Z.AI API key (first-time setup)"
-Write-Host "  3. Use 'z' instead of 'claude' to launch Claude Code with Z.AI"
+Write-Host "  2. Run 'z' (or 'glm') to configure your Z.AI API key (first-time setup)"
+Write-Host "  3. Use 'z' or 'glm' instead of 'claude' to launch Claude Code with Z.AI"
+Write-Host ""
+Write-Host "Note: Both 'z' and 'glm' commands are available (glm represents the GLM model family)"
 Write-Host ""
 Write-Host "For more information, see README.md"
 Write-Host ""

@@ -2,6 +2,8 @@
 
 This document explains the example configuration file (`.zai.json.example`) and how to use it.
 
+**Note:** The wrapper can be invoked using either `z` or `glm` commands - they work identically. The `glm` command is an alternative naming convention representing the GLM model family.
+
 ## Quick Start
 
 1. Copy the example file to one of the supported locations:

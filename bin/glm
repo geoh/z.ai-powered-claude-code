@@ -1,0 +1,10 @@
+#!/bin/bash
+# GLM shim - calls the z wrapper script
+# This provides an alternative naming convention representing the GLM model family
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Call the z script with all arguments
+exec "$SCRIPT_DIR/z" "$@"
+

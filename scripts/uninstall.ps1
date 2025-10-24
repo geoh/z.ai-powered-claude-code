@@ -30,14 +30,17 @@ $filesFound = $false
 if (Test-Path "$InstallDir\z") { $filesFound = $true }
 if (Test-Path "$InstallDir\z.cmd") { $filesFound = $true }
 if (Test-Path "$InstallDir\z.ps1") { $filesFound = $true }
+if (Test-Path "$InstallDir\glm") { $filesFound = $true }
+if (Test-Path "$InstallDir\glm.cmd") { $filesFound = $true }
+if (Test-Path "$InstallDir\glm.ps1") { $filesFound = $true }
 
 if (-not $filesFound) {
     Write-ColorOutput "No Z.AI wrapper scripts found in $InstallDir" "Yellow"
 } else {
     Write-ColorOutput "Found Z.AI wrapper scripts in $InstallDir" "Blue"
     Write-Host ""
-    $removeScripts = Read-Host "Remove wrapper scripts? [y/N]"
-    
+    $removeScripts = Read-Host "Remove wrapper scripts (including glm shims)? [y/N]"
+
     if ($removeScripts -eq "y" -or $removeScripts -eq "Y") {
         if (Test-Path "$InstallDir\z") {
             Remove-Item "$InstallDir\z" -Force
@@ -50,6 +53,18 @@ if (-not $filesFound) {
         if (Test-Path "$InstallDir\z.ps1") {
             Remove-Item "$InstallDir\z.ps1" -Force
             Write-ColorOutput "✓ Removed $InstallDir\z.ps1" "Green"
+        }
+        if (Test-Path "$InstallDir\glm") {
+            Remove-Item "$InstallDir\glm" -Force
+            Write-ColorOutput "✓ Removed $InstallDir\glm" "Green"
+        }
+        if (Test-Path "$InstallDir\glm.cmd") {
+            Remove-Item "$InstallDir\glm.cmd" -Force
+            Write-ColorOutput "✓ Removed $InstallDir\glm.cmd" "Green"
+        }
+        if (Test-Path "$InstallDir\glm.ps1") {
+            Remove-Item "$InstallDir\glm.ps1" -Force
+            Write-ColorOutput "✓ Removed $InstallDir\glm.ps1" "Green"
         }
     } else {
         Write-ColorOutput "Skipped removing wrapper scripts" "Yellow"

@@ -47,7 +47,9 @@ The installer will:
 - Optionally install Claude status line configuration
 - Guide you through first-time configuration
 
-After installation, simply run `z` to start the interactive configuration wizard. If you choose to store your API key as an environment variable, it will be set immediately in your current session—no need to restart your terminal!
+After installation, simply run `z` (or `glm`) to start the interactive configuration wizard. If you choose to store your API key as an environment variable, it will be set immediately in your current session—no need to restart your terminal!
+
+**Note:** Both `z` and `glm` commands are available. The `glm` command is an alternative naming convention that represents the GLM model family.
 
 ## Configuration
 
@@ -283,23 +285,29 @@ The uninstaller will prompt you to:
 
 ## Usage
 
-Once installed, use the `z` command instead of `claude`:
+Once installed, use the `z` (or `glm`) command instead of `claude`:
 
 ```bash
 # First run - interactive configuration wizard
 z
+# or
+glm
 
 # Start a new session with the default model
 z
+# or
+glm
 
 # Use a specific model
 z --model sonnet
-z --model haiku
+glm --model haiku
 
 # Pass any other claude arguments
 z --model opus "Help me write a Python script"
-z --help
+glm --help
 ```
+
+**Note:** Both `z` and `glm` commands work identically. Use whichever you prefer - `glm` represents the GLM model family.
 
 ### Using Different Models
 
@@ -349,10 +357,10 @@ The status line displays:
 ## Platform-Specific Notes
 
 ### Windows
-- Three scripts are provided: `z.cmd` (Command Prompt), `z.ps1` (PowerShell), and `z` (Git Bash)
+- Six scripts are provided: `z.cmd`/`glm.cmd` (Command Prompt), `z.ps1`/`glm.ps1` (PowerShell), and `z`/`glm` (Git Bash)
 - The scripts automatically detect the Windows user profile directory
 - Requires `jq` to be installed and available in PATH
-- **Status line limitation:** The status line **only works with Git Bash** (`z`). It does not work with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations. Use Git Bash for the full experience including status line
+- **Status line limitation:** The status line **only works with Git Bash** (`z` or `glm`). It does not work with CMD or PowerShell due to stdin piping limitations. Use Git Bash for the full experience including status line
 
 ### macOS/Linux
 - The `z` script works with bash and other POSIX-compliant shells
@@ -383,10 +391,10 @@ The status line displays:
   - macOS: `brew install jq`
   - Windows: `choco install jq` or `scoop install jq`
 
-**Command not found: z**
+**Command not found: z or glm**
 - Ensure `~/.local/bin` is in your PATH
 - Restart your terminal after installation
-- Check installation with: `which z` (Unix) or `where z` (Windows)
+- Check installation with: `which z` or `which glm` (Unix) or `where z` or `where glm` (Windows)
 
 ### Status Line Issues
 
@@ -394,7 +402,7 @@ The status line displays:
 - Verify `~/.claude/settings.json` contains the statusLine configuration
 - Ensure `statusLine.sh` is executable: `chmod +x ~/.claude/statusLine.sh`
 - Ensure bash is installed and in your PATH (on Windows, install Git for Windows)
-- **Windows users:** The status line **only works when running from Git Bash** (`z`). It does not work with CMD (`z.cmd`) or PowerShell (`z.ps1`) due to stdin piping limitations when Claude Code invokes external commands. Use Git Bash for the full experience
+- **Windows users:** The status line **only works when running from Git Bash** (`z` or `glm`). It does not work with CMD or PowerShell due to stdin piping limitations when Claude Code invokes external commands. Use Git Bash for the full experience
 
 ### Per-Project Configuration
 
