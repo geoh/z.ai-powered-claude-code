@@ -157,8 +157,8 @@ $settings = @{
     enableThinking = if ($Config.enableThinking) { $Config.enableThinking } else { "null" }
     enableStreaming = if ($Config.enableStreaming) { $Config.enableStreaming } else { "null" }
     reasoningEffort = if ($Config.reasoningEffort) { $Config.reasoningEffort } else { "null" }
-    maxThinkingTokens = if ($Config.maxThinkingTokens) { $Config.maxThinkingTokens } else { "null" }
-    maxOutputTokens = if ($Config.maxOutputTokens) { $Config.maxOutputTokens } else { "null" }
+    maxThinkingTokens = if ($null -ne $Config.maxThinkingTokens) { $Config.maxThinkingTokens } else { "null" }
+    maxOutputTokens = if ($null -ne $Config.maxOutputTokens) { $Config.maxOutputTokens } else { "null" }
 }
 
 # Override with project config if present (shallow merge)
